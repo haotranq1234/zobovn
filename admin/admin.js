@@ -659,7 +659,7 @@ function handleAuthState(user) {
 async function bootstrap() {
   const services = await getFirebaseServices();
   state.firebase = services;
-  state.adminEmail = services.adminEmail || "admin@zobovn.store";
+  state.adminEmail = services.adminEmail || "haotranq1234@gmail.com";
   state.auth = services.getAuth(services.app);
   state.db = services.getFirestore(services.app);
   state.storage = services.getStorage(services.app);

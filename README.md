@@ -95,7 +95,7 @@ Sau đó mở:
 
 Mặc định repo đang dùng:
 
-- `admin@zobovn.store`
+- `haotranq1234@gmail.com`
 
 Nếu đổi email admin, bạn phải cập nhật đồng bộ:
 
@@ -155,7 +155,7 @@ FIREBASE_STORAGE_BUCKET=
 FIREBASE_MESSAGING_SENDER_ID=
 FIREBASE_APP_ID=
 FIREBASE_MEASUREMENT_ID=
-ADMIN_EMAIL=
+ADMIN_EMAIL=haotranq1234@gmail.com
 ```
 
 ## Cấu hình Vercel
