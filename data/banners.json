@@ -1,7 +1,7 @@
 {
   "banners": [
     {
-      "isActive": true,
+      "isActive": false,
       "title": "ZOBO CMS đã sẵn sàng",
       "description": "Quản lý sản phẩm, ảnh, video, banner và nội dung website ngay trong trang admin.",
       "image": "assets/logo.png",
