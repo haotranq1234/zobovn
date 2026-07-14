@@ -5,29 +5,15 @@
       "isActive": true,
       "title": "Facebook",
       "description": "Xem cập nhật và inbox theo trang chính thức.",
-      "href": "https://www.facebook.com/zobovn",
+      "href": "https://www.facebook.com/Zoboshop.vn",
       "icon": "facebook"
     },
     {
       "isActive": true,
       "title": "Messenger",
       "description": "Nhắn tin trực tiếp để được hỗ trợ nhanh hơn.",
-      "href": "https://m.me/zobovn",
+      "href": "https://m.me/zoboshop.vn",
       "icon": "messenger"
-    },
-    {
-      "isActive": true,
-      "title": "TikTok",
-      "description": "Xem thêm nội dung ngắn và nhận diện sản phẩm.",
-      "href": "https://www.tiktok.com/@zobovn",
-      "icon": "tiktok"
-    },
-    {
-      "isActive": true,
-      "title": "Đặt hàng",
-      "description": "Đi thẳng tới trang đặt hàng hoặc link chốt đơn.",
-      "href": "https://zobovn.store/dat-hang",
-      "icon": "order"
     }
   ]
 }
