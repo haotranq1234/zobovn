@@ -25,7 +25,24 @@ collections:
               - { label: "Tên sản phẩm", name: "name", widget: "string" }
               - { label: "Giá", name: "price", widget: "string", default: "Liên hệ" }
               - { label: "Mô tả", name: "description", widget: "text" }
-              - { label: "Ảnh sản phẩm", name: "image", widget: "image" }
+              - { label: "Ảnh đại diện", name: "image", widget: "image", hint: "Ảnh chính của sản phẩm, dùng ở hero và làm ảnh đầu tiên nếu chưa có thư viện." }
+              - label: "Thư viện ảnh/video"
+                name: "gallery"
+                widget: "list"
+                required: false
+                summary: "{{fields.type}} - {{fields.title}}"
+                hint: "Thêm nhiều ảnh hoặc video cho cùng một sản phẩm."
+                fields:
+                  - label: "Loại media"
+                    name: "type"
+                    widget: "select"
+                    default: "image"
+                    options:
+                      - { label: "Ảnh", value: "image" }
+                      - { label: "Video", value: "video" }
+                  - { label: "File ảnh/video", name: "url", widget: "file", hint: "Upload ảnh hoặc video từ máy. Video nên dùng MP4 để web chạy tốt.", required: true }
+                  - { label: "Tiêu đề media", name: "title", widget: "string", required: false }
+                  - { label: "Ảnh poster cho video", name: "poster", widget: "image", required: false, hint: "Không bắt buộc. Dùng làm ảnh chờ trước khi bấm play video." }
               - { label: "Danh mục", name: "category", widget: "string", required: false }
               - { label: "Badge", name: "badge", widget: "string", required: false }
               - { label: "Link đặt hàng", name: "buyLink", widget: "string", required: false }

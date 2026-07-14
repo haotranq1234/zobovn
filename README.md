@@ -111,7 +111,7 @@ https://thunderous-seahorse-11fa34.netlify.app/admin
 2. Đăng nhập bằng tài khoản đã được Netlify mời.
 3. Chọn `San pham`.
 4. Thêm, sửa, xóa sản phẩm trong danh sách.
-5. Upload ảnh sản phẩm nếu cần.
+5. Upload ảnh đại diện, thêm nhiều ảnh/video trong `Thư viện ảnh/video` nếu cần.
 6. Bấm `Publish`.
 
 Sau khi publish, Netlify sẽ tự deploy lại. Thường mất khoảng vài chục giây.
@@ -125,6 +125,7 @@ Mỗi sản phẩm trong `data/products.json` có các trường:
 - `price`
 - `description`
 - `image`
+- `gallery`
 - `category`
 - `badge`
 - `buyLink`
@@ -133,6 +134,23 @@ Mỗi sản phẩm trong `data/products.json` có các trường:
 - `updatedAt`
 
 Nếu `isActive` là `false`, sản phẩm sẽ không hiện trên trang chủ.
+
+### Thêm nhiều ảnh hoặc video cho một sản phẩm
+
+Trong trang admin, mở sản phẩm rồi tìm mục:
+
+```text
+Thư viện ảnh/video
+```
+
+Mỗi item trong thư viện có:
+
+- `Loại media`: chọn `Ảnh` hoặc `Video`
+- `File ảnh/video`: upload file từ máy
+- `Tiêu đề media`: tên ngắn để dễ nhận biết
+- `Ảnh poster cho video`: không bắt buộc, dùng làm ảnh chờ trước khi phát video
+
+Video nên dùng định dạng `.mp4` để chạy ổn trên hầu hết trình duyệt.
 
 ## Chạy local
 

@@ -94,6 +94,56 @@ function normalizeImage(value) {
   return image;
 }
 
+function normalizeMediaUrl(value, fallback = "assets/logo.png") {
+  const mediaUrl = normalizeText(value, fallback);
+  if (mediaUrl.startsWith("http") || mediaUrl.startsWith("/")) {
+    return mediaUrl;
+  }
+  return mediaUrl;
+}
+
+function inferMediaType(item) {
+  const explicitType = normalizeText(item?.type).toLowerCase();
+  if (explicitType === "video") return "video";
+  if (explicitType === "image") return "image";
+
+  const url = normalizeText(item?.url || item?.image || item?.src).toLowerCase();
+  return /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(url) ? "video" : "image";
+}
+
+function normalizeGalleryItem(item, fallbackTitle) {
+  const media = typeof item === "string" ? { url: item } : item || {};
+  const url = normalizeMediaUrl(media.url || media.image || media.src, "");
+  if (!url) return null;
+
+  return {
+    type: inferMediaType(media),
+    url,
+    poster: normalizeMediaUrl(media.poster, ""),
+    title: normalizeText(media.title, fallbackTitle),
+  };
+}
+
+function getProductMedia(product) {
+  const name = normalizeText(product.name, "Sản phẩm");
+  const cover = normalizeGalleryItem({ type: "image", url: product.image, title: name }, name);
+  const gallery = Array.isArray(product.gallery)
+    ? product.gallery.map((item) => normalizeGalleryItem(item, name)).filter(Boolean)
+    : [];
+
+  const seen = new Set();
+  const mediaItems = [cover, ...gallery].filter(Boolean).filter((item) => {
+    const key = `${item.type}:${item.url}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return mediaItems.length
+    ? mediaItems
+    : [{ type: "image", url: "assets/logo.png", poster: "", title: name }];
+}
+
 function formatPrice(value) {
   const raw = normalizeText(value);
   if (!raw) return "Liên hệ";
@@ -210,11 +260,71 @@ function renderHeroProducts(items) {
 
     if (badge) badge.textContent = normalizeText(product.badge, fallback.badge);
     if (image) {
-      image.src = normalizeImage(product.image);
+      const heroImage = getProductMedia(product).find((item) => item.type === "image") || getProductMedia(product)[0];
+      image.src = normalizeImage(heroImage.url);
       image.alt = normalizeText(product.name, defaultTitle);
     }
     if (title) title.textContent = normalizeText(product.name, defaultTitle);
   });
+}
+
+function renderMainMedia(media, name) {
+  if (media.type === "video") {
+    const poster = media.poster ? ` poster="${escapeHtml(media.poster)}"` : "";
+    return `
+      <video src="${escapeHtml(media.url)}"${poster} controls preload="metadata" playsinline aria-label="${escapeHtml(media.title || name)}">
+        Trình duyệt của bạn chưa hỗ trợ video.
+      </video>
+    `;
+  }
+
+  return `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.title || name)}" loading="lazy" decoding="async" />`;
+}
+
+function renderProductMedia(product, name) {
+  const mediaItems = getProductMedia(product);
+  const mainMedia = mediaItems[0];
+  const thumbs = mediaItems.length > 1
+    ? `
+      <div class="product-card__thumbs" data-product-media-thumbs aria-label="Thư viện ảnh và video">
+        ${mediaItems
+          .map((media, index) => {
+            const isActive = index === 0 ? " is-active" : "";
+            const label = media.type === "video" ? "Video" : "Ảnh";
+            const preview = media.type === "video"
+              ? media.poster
+                ? `<img src="${escapeHtml(media.poster)}" alt="${escapeHtml(media.title || name)}" loading="lazy" decoding="async" />`
+                : `<span class="product-card__thumb-label">Video</span>`
+              : `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.title || name)}" loading="lazy" decoding="async" />`;
+
+            return `
+              <button
+                class="product-card__thumb${isActive}"
+                type="button"
+                data-product-media-thumb
+                data-media-type="${escapeHtml(media.type)}"
+                data-media-url="${escapeHtml(media.url)}"
+                data-media-poster="${escapeHtml(media.poster)}"
+                data-media-title="${escapeHtml(media.title || name)}"
+                aria-label="${escapeHtml(`${label}: ${media.title || name}`)}"
+              >
+                ${preview}
+              </button>
+            `;
+          })
+          .join("")}
+      </div>
+    `
+    : "";
+
+  return `
+    <div class="product-card__media" data-product-media>
+      <div class="product-card__media-stage" data-product-media-stage>
+        ${renderMainMedia(mainMedia, name)}
+      </div>
+      ${thumbs}
+    </div>
+  `;
 }
 
 function renderProductCards(items) {
@@ -231,14 +341,11 @@ function renderProductCards(items) {
       const price = formatPrice(product.price);
       const buyLink = sanitizeUrl(product.buyLink, siteConfig.links.order);
       const description = normalizeText(product.description, "Sản phẩm đang được cập nhật.");
-      const image = normalizeImage(product.image);
       const name = normalizeText(product.name, "Tên sản phẩm");
 
       return `
         <article class="product-card reveal" id="product-${productId}">
-          <div class="product-card__media">
-            <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy" decoding="async" />
-          </div>
+          ${renderProductMedia(product, name)}
           <div class="product-card__body">
             <div class="product-card__header">
               <span class="badge">${escapeHtml(badge)}</span>
@@ -261,6 +368,29 @@ function renderProductCards(items) {
     .join("");
 
   observeRevealElements(productGrid);
+}
+
+function setupProductMediaSwitcher() {
+  productGrid.addEventListener("click", (event) => {
+    const thumb = event.target.closest("[data-product-media-thumb]");
+    if (!thumb) return;
+
+    const mediaRoot = thumb.closest("[data-product-media]");
+    const stage = mediaRoot?.querySelector("[data-product-media-stage]");
+    if (!stage) return;
+
+    const media = {
+      type: thumb.dataset.mediaType || "image",
+      url: thumb.dataset.mediaUrl || "",
+      poster: thumb.dataset.mediaPoster || "",
+      title: thumb.dataset.mediaTitle || "Sản phẩm",
+    };
+
+    stage.innerHTML = renderMainMedia(media, media.title);
+    mediaRoot.querySelectorAll("[data-product-media-thumb]").forEach((button) => {
+      button.classList.toggle("is-active", button === thumb);
+    });
+  });
 }
 
 function observeRevealElements(scope = document) {
@@ -333,6 +463,7 @@ async function bootstrap() {
   renderContacts();
   setupOrderCtas();
   setupNetlifyIdentity();
+  setupProductMediaSwitcher();
   renderLoadingState();
   observeRevealElements();
 
