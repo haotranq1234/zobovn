@@ -8,11 +8,22 @@ public_folder: "/assets/uploads"
 publish_mode: simple
 
 collections:
-  - name: "site_data"
-    label: "Quản lý website"
+  - name: "dashboard"
+    label: "Dashboard"
+    files:
+      - name: "overview"
+        label: "Tổng quan"
+        file: "data/dashboard.json"
+        format: "json"
+        fields:
+          - { label: "Ghi chú nội bộ", name: "note", widget: "text", required: false }
+          - { label: "Việc cần làm", name: "todo", widget: "list", required: false, field: { label: "Nội dung", name: "item", widget: "string" } }
+
+  - name: "products"
+    label: "Sản phẩm"
     files:
       - name: "products"
-        label: "Sản phẩm"
+        label: "Danh sách sản phẩm"
         file: "data/products.json"
         format: "json"
         fields:
@@ -45,7 +56,204 @@ collections:
                   - { label: "Ảnh poster cho video", name: "poster", widget: "image", required: false, hint: "Không bắt buộc. Dùng làm ảnh chờ trước khi bấm play video." }
               - { label: "Danh mục", name: "category", widget: "string", required: false }
               - { label: "Badge", name: "badge", widget: "string", required: false }
+              - { label: "Đánh dấu bán chạy", name: "isBestSeller", widget: "boolean", default: false, required: false }
               - { label: "Link đặt hàng", name: "buyLink", widget: "string", required: false }
               - { label: "Hiển thị trên website", name: "isActive", widget: "boolean", default: true }
               - { label: "Ngày tạo", name: "createdAt", widget: "datetime", required: false }
               - { label: "Ngày cập nhật", name: "updatedAt", widget: "datetime", required: false }
+
+  - name: "banners"
+    label: "Banner"
+    files:
+      - name: "banners"
+        label: "Banner website"
+        file: "data/banners.json"
+        format: "json"
+        fields:
+          - label: "Danh sách banner"
+            name: "banners"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Hiển thị", name: "isActive", widget: "boolean", default: true }
+              - { label: "Tiêu đề", name: "title", widget: "string" }
+              - { label: "Mô tả", name: "description", widget: "text", required: false }
+              - { label: "Ảnh banner", name: "image", widget: "image", required: false }
+              - { label: "Nút CTA", name: "ctaLabel", widget: "string", required: false }
+              - { label: "Link CTA", name: "ctaLink", widget: "string", required: false }
+
+  - name: "content"
+    label: "Nội dung website"
+    files:
+      - name: "content"
+        label: "Text trên website"
+        file: "data/content.json"
+        format: "json"
+        fields:
+          - label: "Hero"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Dòng nhỏ", name: "eyebrow", widget: "string" }
+              - { label: "Tiêu đề chính", name: "title", widget: "text" }
+              - { label: "Mô tả", name: "lead", widget: "text" }
+              - { label: "Nút chính", name: "primaryCtaLabel", widget: "string" }
+              - { label: "Nút đặt hàng", name: "secondaryCtaLabel", widget: "string" }
+              - { label: "Chip nổi bật", name: "chips", widget: "list", field: { label: "Chip", name: "chip", widget: "string" } }
+          - label: "Khu sản phẩm"
+            name: "productsSection"
+            widget: "object"
+            fields:
+              - { label: "Dòng nhỏ", name: "eyebrow", widget: "string" }
+              - { label: "Tiêu đề", name: "title", widget: "text" }
+              - { label: "Mô tả", name: "description", widget: "text" }
+          - label: "Khu lợi ích"
+            name: "benefitsSection"
+            widget: "object"
+            fields:
+              - { label: "Dòng nhỏ", name: "eyebrow", widget: "string" }
+              - { label: "Tiêu đề", name: "title", widget: "text" }
+              - label: "Danh sách lợi ích"
+                name: "items"
+                widget: "list"
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: "Tiêu đề", name: "title", widget: "string" }
+                  - { label: "Mô tả", name: "description", widget: "text" }
+                  - { label: "Icon", name: "icon", widget: "select", options: ["compact", "clean", "collection", "support"], default: "compact" }
+          - label: "Khu liên hệ"
+            name: "contactSection"
+            widget: "object"
+            fields:
+              - { label: "Dòng nhỏ", name: "eyebrow", widget: "string" }
+              - { label: "Tiêu đề", name: "title", widget: "text" }
+              - { label: "Mô tả", name: "description", widget: "text" }
+
+  - name: "social"
+    label: "Facebook / TikTok / YouTube / Zalo"
+    files:
+      - name: "social"
+        label: "Link liên hệ"
+        file: "data/social.json"
+        format: "json"
+        fields:
+          - label: "Các kênh liên hệ"
+            name: "channels"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Hiển thị", name: "isActive", widget: "boolean", default: true }
+              - { label: "Tên kênh", name: "title", widget: "string" }
+              - { label: "Mô tả", name: "description", widget: "text" }
+              - { label: "Link", name: "href", widget: "string" }
+              - { label: "Icon", name: "icon", widget: "select", options: ["facebook", "messenger", "tiktok", "youtube", "zalo", "order"], default: "facebook" }
+          - { label: "Link đặt hàng mặc định", name: "orderLink", widget: "string" }
+
+  - name: "vouchers"
+    label: "Voucher"
+    files:
+      - name: "vouchers"
+        label: "Voucher / khuyến mãi"
+        file: "data/vouchers.json"
+        format: "json"
+        fields:
+          - label: "Danh sách voucher"
+            name: "vouchers"
+            widget: "list"
+            summary: "{{fields.code}} - {{fields.title}}"
+            fields:
+              - { label: "Hiển thị", name: "isActive", widget: "boolean", default: true }
+              - { label: "Mã voucher", name: "code", widget: "string" }
+              - { label: "Tiêu đề", name: "title", widget: "string" }
+              - { label: "Mô tả", name: "description", widget: "text", required: false }
+              - { label: "Ngày hết hạn", name: "expiresAt", widget: "datetime", required: false }
+
+  - name: "categories"
+    label: "Danh mục"
+    files:
+      - name: "categories"
+        label: "Danh mục sản phẩm"
+        file: "data/categories.json"
+        format: "json"
+        fields:
+          - label: "Danh sách danh mục"
+            name: "categories"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "Tên danh mục", name: "name", widget: "string" }
+              - { label: "Mô tả", name: "description", widget: "text", required: false }
+              - { label: "Hiển thị", name: "isActive", widget: "boolean", default: true }
+
+  - name: "popup"
+    label: "Popup khuyến mãi"
+    files:
+      - name: "popup"
+        label: "Popup"
+        file: "data/popup.json"
+        format: "json"
+        fields:
+          - { label: "Bật popup", name: "isActive", widget: "boolean", default: false }
+          - { label: "Tiêu đề", name: "title", widget: "string" }
+          - { label: "Nội dung", name: "description", widget: "text" }
+          - { label: "Ảnh", name: "image", widget: "image", required: false }
+          - { label: "Nút CTA", name: "ctaLabel", widget: "string", required: false }
+          - { label: "Link CTA", name: "ctaLink", widget: "string", required: false }
+
+  - name: "media"
+    label: "Thư viện ảnh"
+    files:
+      - name: "media"
+        label: "Ảnh / video đã lưu"
+        file: "data/media.json"
+        format: "json"
+        fields:
+          - label: "Danh sách media"
+            name: "items"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Tên", name: "title", widget: "string" }
+              - { label: "File", name: "file", widget: "file" }
+              - { label: "Ghi chú", name: "note", widget: "text", required: false }
+
+  - name: "settings"
+    label: "Cài đặt website"
+    files:
+      - name: "settings"
+        label: "Thông tin thương hiệu"
+        file: "data/settings.json"
+        format: "json"
+        fields:
+          - { label: "Tên thương hiệu", name: "brandName", widget: "string" }
+          - { label: "Địa điểm", name: "location", widget: "string" }
+          - { label: "Domain hiển thị", name: "domain", widget: "string" }
+          - { label: "Canonical URL", name: "canonicalUrl", widget: "string" }
+          - { label: "Logo", name: "logo", widget: "image" }
+          - { label: "Năm footer", name: "year", widget: "number" }
+
+  - name: "seo"
+    label: "SEO"
+    files:
+      - name: "seo"
+        label: "SEO trang chủ"
+        file: "data/seo.json"
+        format: "json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "OG Title", name: "ogTitle", widget: "string" }
+          - { label: "OG Description", name: "ogDescription", widget: "text" }
+          - { label: "OG Image", name: "ogImage", widget: "image", required: false }
+
+  - name: "accounts"
+    label: "Quản lý tài khoản"
+    files:
+      - name: "accounts"
+        label: "Hướng dẫn tài khoản admin"
+        file: "data/accounts.json"
+        format: "json"
+        fields:
+          - { label: "Ghi chú", name: "note", widget: "text" }
+          - { label: "Link Netlify Identity", name: "identityUrl", widget: "string" }

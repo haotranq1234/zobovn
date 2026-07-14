@@ -1,0 +1,22 @@
+{
+  "categories": [
+    {
+      "id": "full-size",
+      "name": "Full Size",
+      "description": "Các sản phẩm full size.",
+      "isActive": true
+    },
+    {
+      "id": "combo",
+      "name": "Combo",
+      "description": "Các bộ combo nhiều sản phẩm.",
+      "isActive": true
+    },
+    {
+      "id": "slim",
+      "name": "Slim",
+      "description": "Các mẫu slim nhỏ gọn.",
+      "isActive": true
+    }
+  ]
+}

@@ -9,7 +9,7 @@
       content="ZOBO VN là landing page chính thức giới thiệu phụ kiện lọc nhỏ gọn, hiện đại và dễ đặt hàng tại Biên Hòa, Việt Nam."
     />
     <meta name="robots" content="index,follow,max-image-preview:large" />
-    <link rel="canonical" href="https://zobovn.store/" />
+    <link rel="canonical" href="https://zobovn.store/" data-canonical-url />
 
     <meta property="og:site_name" content="ZOBO VN" />
     <meta property="og:type" content="website" />
@@ -53,11 +53,11 @@
       <header class="site-header reveal">
         <a class="brand" href="#top" aria-label="ZOBO VN trang chủ">
           <span class="brand__mark" aria-hidden="true">
-            <img src="assets/logo.png" alt="" />
+            <img src="assets/logo.png" alt="" data-site-logo />
           </span>
           <span class="brand__text">
-            <strong>ZOBO VN</strong>
-            <span>Biên Hòa, Việt Nam</span>
+            <strong data-brand-name>ZOBO VN</strong>
+            <span data-brand-location>Biên Hòa, Việt Nam</span>
           </span>
         </a>
 
@@ -71,19 +71,19 @@
       <main id="main-content">
         <section class="hero section" id="top">
           <div class="hero__copy reveal">
-            <p class="eyebrow">Premium bio commerce landing page</p>
-            <h1>Giải pháp phụ kiện lọc nhỏ gọn cho trải nghiệm tiện lợi hơn.</h1>
-            <p class="hero__lead">
+            <p class="eyebrow" data-hero-eyebrow>Premium bio commerce landing page</p>
+            <h1 data-hero-title>Giải pháp phụ kiện lọc nhỏ gọn cho trải nghiệm tiện lợi hơn.</h1>
+            <p class="hero__lead" data-hero-lead>
               ZOBO VN mang đến các dòng sản phẩm gọn gàng, hiện đại và dễ sử dụng,
               tối ưu cho khách hàng tìm kiếm giải pháp mua nhanh trên điện thoại.
             </p>
 
             <div class="hero__actions">
-              <a class="button button--primary" href="#products">Xem sản phẩm</a>
-              <a class="button button--secondary" href="#contact" data-order-link>Đặt hàng ngay</a>
+              <a class="button button--primary" href="#products" data-hero-primary-cta>Xem sản phẩm</a>
+              <a class="button button--secondary" href="#contact" data-order-link data-hero-secondary-cta>Đặt hàng ngay</a>
             </div>
 
-            <ul class="hero__chips" aria-label="Điểm nổi bật">
+            <ul class="hero__chips" aria-label="Điểm nổi bật" data-hero-chips>
               <li>Thiết kế nhỏ gọn</li>
               <li>Dễ vệ sinh</li>
               <li>Đặt hàng nhanh</li>
@@ -97,8 +97,9 @@
                 src="assets/logo.png"
                 alt=""
                 class="hero-card__logo"
+                data-site-logo
               />
-              <p>Thương hiệu phụ kiện lọc phong cách hiện đại, tập trung vào trải nghiệm gọn nhẹ và dễ tiếp cận trên mobile.</p>
+              <p data-brand-card-copy>Thương hiệu phụ kiện lọc phong cách hiện đại, tập trung vào trải nghiệm gọn nhẹ và dễ tiếp cận trên mobile.</p>
             </div>
 
             <div class="hero-card hero-card--feature hero-card--primary" data-hero-primary>
@@ -125,23 +126,26 @@
           </div>
         </section>
 
+        <div class="banner-zone reveal" data-banner-zone></div>
+
         <section class="section section--tight reveal" id="products" aria-labelledby="products-title">
           <div class="section-heading">
-            <p class="eyebrow">Sản phẩm nổi bật</p>
-            <h2 id="products-title">Dòng sản phẩm được sắp xếp để khách xem và đặt hàng thật nhanh.</h2>
-            <p>
+            <p class="eyebrow" data-products-eyebrow>Sản phẩm nổi bật</p>
+            <h2 id="products-title" data-products-title>Dòng sản phẩm được sắp xếp để khách xem và đặt hàng thật nhanh.</h2>
+            <p data-products-description>
               Nội dung sản phẩm được cấu trúc theo dữ liệu riêng để sau này có thể thêm,
               sửa hoặc ẩn sản phẩm mà không phải chạm vào bố cục tổng thể.
             </p>
           </div>
 
+          <div class="voucher-strip" data-voucher-strip></div>
           <div class="product-grid" data-product-grid aria-live="polite"></div>
         </section>
 
         <section class="section reveal" id="why-zobo" aria-labelledby="why-title">
           <div class="section-heading">
-            <p class="eyebrow">Why ZOBO</p>
-            <h2 id="why-title">Lý do thương hiệu tạo cảm giác gọn gàng, đáng tin và dễ mua.</h2>
+            <p class="eyebrow" data-benefits-eyebrow>Why ZOBO</p>
+            <h2 id="why-title" data-benefits-title>Lý do thương hiệu tạo cảm giác gọn gàng, đáng tin và dễ mua.</h2>
           </div>
 
           <div class="benefit-grid" data-benefit-grid></div>
@@ -149,9 +153,9 @@
 
         <section class="section reveal" id="contact" aria-labelledby="contact-title">
           <div class="section-heading">
-            <p class="eyebrow">Liên hệ</p>
-            <h2 id="contact-title">Kết nối qua kênh phù hợp nhất với khách của bạn.</h2>
-            <p>
+            <p class="eyebrow" data-contact-eyebrow>Liên hệ</p>
+            <h2 id="contact-title" data-contact-title>Kết nối qua kênh phù hợp nhất với khách của bạn.</h2>
+            <p data-contact-description>
               Các nút bên dưới được thiết kế đủ lớn cho thao tác bằng ngón tay trên điện thoại và mở trực tiếp tới kênh tương ứng.
             </p>
           </div>
@@ -162,15 +166,17 @@
 
       <footer class="site-footer reveal">
         <div>
-          <strong>ZOBO VN</strong>
-          <p>Biên Hòa, Việt Nam</p>
+          <strong data-brand-name>ZOBO VN</strong>
+          <p data-brand-location>Biên Hòa, Việt Nam</p>
         </div>
         <div>
-          <p>© 2026 ZOBO VN</p>
-          <p>zobovn.store</p>
+          <p data-footer-copy>© 2026 ZOBO VN</p>
+          <p data-footer-domain>zobovn.store</p>
         </div>
       </footer>
     </div>
+
+    <div data-popup-root></div>
 
     <a class="floating-cta" href="#contact" data-order-link aria-label="Đặt hàng ngay">
       Đặt hàng ngay

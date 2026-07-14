@@ -1,0 +1,11 @@
+{
+  "vouchers": [
+    {
+      "isActive": false,
+      "code": "ZOBO10",
+      "title": "Ưu đãi khách mới",
+      "description": "Bật voucher này trong admin khi có chương trình khuyến mãi.",
+      "expiresAt": ""
+    }
+  ]
+}

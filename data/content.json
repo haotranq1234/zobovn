@@ -1,0 +1,50 @@
+{
+  "hero": {
+    "eyebrow": "Premium bio commerce landing page",
+    "title": "Giải pháp phụ kiện lọc nhỏ gọn cho trải nghiệm tiện lợi hơn.",
+    "lead": "ZOBO VN mang đến các dòng sản phẩm gọn gàng, hiện đại và dễ sử dụng, tối ưu cho khách hàng tìm kiếm giải pháp mua nhanh trên điện thoại.",
+    "primaryCtaLabel": "Xem sản phẩm",
+    "secondaryCtaLabel": "Đặt hàng ngay",
+    "chips": [
+      "Thiết kế nhỏ gọn",
+      "Dễ vệ sinh",
+      "Đặt hàng nhanh"
+    ]
+  },
+  "productsSection": {
+    "eyebrow": "Sản phẩm nổi bật",
+    "title": "Dòng sản phẩm được sắp xếp để khách xem và đặt hàng thật nhanh.",
+    "description": "Nội dung sản phẩm được quản lý trong ZOBO CMS để bạn có thể thêm, sửa hoặc ẩn sản phẩm mà không phải sửa code."
+  },
+  "benefitsSection": {
+    "eyebrow": "Why ZOBO",
+    "title": "Lý do thương hiệu tạo cảm giác gọn gàng, đáng tin và dễ mua.",
+    "items": [
+      {
+        "title": "Thiết kế nhỏ gọn",
+        "description": "Không gian sản phẩm được xử lý tinh gọn, phù hợp với người xem trên màn hình điện thoại.",
+        "icon": "compact"
+      },
+      {
+        "title": "Dễ vệ sinh",
+        "description": "Các mẫu có thể tháo rời để việc vệ sinh và bảo quản thuận tiện hơn.",
+        "icon": "clean"
+      },
+      {
+        "title": "Nhiều mẫu lựa chọn",
+        "description": "Có nhiều kích thước và màu sắc để khách chọn theo nhu cầu thực tế.",
+        "icon": "collection"
+      },
+      {
+        "title": "Hỗ trợ khách hàng nhanh",
+        "description": "Nút liên hệ rõ ràng giúp khách chuyển ngay sang Facebook, Messenger hoặc TikTok.",
+        "icon": "support"
+      }
+    ]
+  },
+  "contactSection": {
+    "eyebrow": "Liên hệ",
+    "title": "Kết nối qua kênh phù hợp nhất với khách của bạn.",
+    "description": "Các nút bên dưới được thiết kế đủ lớn cho thao tác bằng ngón tay trên điện thoại và mở trực tiếp tới kênh tương ứng."
+  }
+}

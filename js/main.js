@@ -1,10 +1,15 @@
-import { benefits, contactChannels, siteConfig } from "./data.js";
+import { benefits as defaultBenefits, contactChannels as defaultContactChannels, siteConfig as defaultSiteConfig } from "./data.js";
 
 const productGrid = document.querySelector("[data-product-grid]");
 const benefitGrid = document.querySelector("[data-benefit-grid]");
 const contactGrid = document.querySelector("[data-contact-grid]");
 const heroPrimary = document.querySelector("[data-hero-primary]");
 const heroSecondary = document.querySelector("[data-hero-secondary]");
+const bannerZone = document.querySelector("[data-banner-zone]");
+const voucherStrip = document.querySelector("[data-voucher-strip]");
+const popupRoot = document.querySelector("[data-popup-root]");
+
+let siteConfig = { ...defaultSiteConfig };
 
 let revealObserver;
 
@@ -55,6 +60,18 @@ const iconMap = {
       <path d="M14 3c.4 2.8 2.3 4.5 5 4.6V10c-2 0-3.5-.7-5-1.9V3Z" opacity=".9"></path>
     </svg>
   `,
+  youtube: `
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="currentColor">
+      <path d="M21.4 7.1a3 3 0 0 0-2.1-2.1C17.5 4.5 12 4.5 12 4.5s-5.5 0-7.3.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 2.1 12a31 31 0 0 0 .5 4.9 3 3 0 0 0 2.1 2.1c1.8.5 7.3.5 7.3.5s5.5 0 7.3-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.9 31 31 0 0 0-.5-4.9ZM10 15.4V8.6l5.8 3.4L10 15.4Z"></path>
+    </svg>
+  `,
+  zalo: `
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 5.5h14v10.2H9.4L5 19v-3.3H5z"></path>
+      <path d="M8.2 9h3.2l-3.2 4h3.5"></path>
+      <path d="M14 13V9h2.3c1 0 1.7.8 1.7 2s-.7 2-1.7 2z"></path>
+    </svg>
+  `,
   order: `
     <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M4.5 7h2l1 10h9.5l2-7H8"></path>
@@ -75,6 +92,29 @@ function escapeHtml(value) {
 function normalizeText(value, fallback = "") {
   const text = String(value ?? "").trim();
   return text.length ? text : fallback;
+}
+
+async function fetchJson(path, fallback) {
+  try {
+    const response = await fetch(path, { cache: "no-store" });
+    if (!response.ok) return fallback;
+    return await response.json();
+  } catch {
+    return fallback;
+  }
+}
+
+function setText(selector, value, fallback = "") {
+  document.querySelectorAll(selector).forEach((element) => {
+    element.textContent = normalizeText(value, fallback);
+  });
+}
+
+function setMeta(selector, value) {
+  const element = document.querySelector(selector);
+  if (element && normalizeText(value)) {
+    element.setAttribute("content", normalizeText(value));
+  }
 }
 
 function sanitizeUrl(value, fallback) {
@@ -165,14 +205,18 @@ function timestampToMillis(value) {
 
 function sortProducts(items) {
   return [...items].sort((first, second) => {
+    if (first.isBestSeller !== second.isBestSeller) {
+      return second.isBestSeller ? 1 : -1;
+    }
+
     const right = timestampToMillis(second.updatedAt) || timestampToMillis(second.createdAt);
     const left = timestampToMillis(first.updatedAt) || timestampToMillis(first.createdAt);
     return right - left;
   });
 }
 
-function renderBenefits() {
-  benefitGrid.innerHTML = benefits
+function renderBenefits(items = defaultBenefits) {
+  benefitGrid.innerHTML = items
     .map(
       (benefit) => `
         <article class="benefit-card reveal">
@@ -187,8 +231,8 @@ function renderBenefits() {
     .join("");
 }
 
-function renderContacts() {
-  contactGrid.innerHTML = contactChannels
+function renderContacts(channels = defaultContactChannels) {
+  contactGrid.innerHTML = channels
     .map(
       (channel) => `
         <a class="contact-card reveal" href="${escapeHtml(channel.href)}" target="_blank" rel="noopener noreferrer">
@@ -337,7 +381,7 @@ function renderProductCards(items) {
     .map((product) => {
       const productId = escapeHtml(product.id || "");
       const category = normalizeText(product.category, "Sản phẩm");
-      const badge = normalizeText(product.badge, "Mới");
+      const badge = product.isBestSeller ? normalizeText(product.badge, "Bán chạy") : normalizeText(product.badge, "Mới");
       const price = formatPrice(product.price);
       const buyLink = sanitizeUrl(product.buyLink, siteConfig.links.order);
       const description = normalizeText(product.description, "Sản phẩm đang được cập nhật.");
@@ -370,6 +414,106 @@ function renderProductCards(items) {
   observeRevealElements(productGrid);
 }
 
+function renderBanners(items = []) {
+  if (!bannerZone) return;
+  const activeBanners = items.filter((banner) => banner.isActive !== false);
+  if (!activeBanners.length) {
+    bannerZone.innerHTML = "";
+    bannerZone.hidden = true;
+    return;
+  }
+
+  bannerZone.hidden = false;
+  bannerZone.innerHTML = activeBanners
+    .slice(0, 2)
+    .map((banner) => {
+      const title = normalizeText(banner.title, "Thông báo ZOBO VN");
+      const description = normalizeText(banner.description);
+      const image = normalizeImage(banner.image);
+      const ctaLabel = normalizeText(banner.ctaLabel);
+      const ctaLink = sanitizeUrl(banner.ctaLink, "#products");
+
+      return `
+        <article class="promo-banner">
+          <div class="promo-banner__copy">
+            <span class="badge">Banner</span>
+            <h2>${escapeHtml(title)}</h2>
+            ${description ? `<p>${escapeHtml(description)}</p>` : ""}
+            ${ctaLabel ? `<a class="button button--secondary" href="${escapeHtml(ctaLink)}">${escapeHtml(ctaLabel)}</a>` : ""}
+          </div>
+          <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" decoding="async" />
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function renderVouchers(items = []) {
+  if (!voucherStrip) return;
+  const activeVouchers = items.filter((voucher) => voucher.isActive !== false);
+  if (!activeVouchers.length) {
+    voucherStrip.innerHTML = "";
+    voucherStrip.hidden = true;
+    return;
+  }
+
+  voucherStrip.hidden = false;
+  voucherStrip.innerHTML = activeVouchers
+    .slice(0, 3)
+    .map((voucher) => {
+      const code = normalizeText(voucher.code, "ZOBO");
+      const title = normalizeText(voucher.title, "Ưu đãi ZOBO VN");
+      const description = normalizeText(voucher.description);
+
+      return `
+        <article class="voucher-card">
+          <span>${escapeHtml(code)}</span>
+          <div>
+            <strong>${escapeHtml(title)}</strong>
+            ${description ? `<p>${escapeHtml(description)}</p>` : ""}
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function renderPopup(popup) {
+  if (!popupRoot || !popup?.isActive) {
+    if (popupRoot) popupRoot.innerHTML = "";
+    return;
+  }
+
+  const title = normalizeText(popup.title, "Khuyến mãi ZOBO VN");
+  const description = normalizeText(popup.description);
+  const image = normalizeImage(popup.image);
+  const ctaLabel = normalizeText(popup.ctaLabel, "Xem ngay");
+  const ctaLink = sanitizeUrl(popup.ctaLink, siteConfig.links.order);
+
+  popupRoot.innerHTML = `
+    <div class="promo-popup" data-promo-popup>
+      <div class="promo-popup__panel" role="dialog" aria-modal="false" aria-label="${escapeHtml(title)}">
+        <button class="promo-popup__close" type="button" data-popup-close aria-label="Đóng popup">×</button>
+        <img src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" />
+        <div>
+          <span class="badge">Khuyến mãi</span>
+          <h2>${escapeHtml(title)}</h2>
+          ${description ? `<p>${escapeHtml(description)}</p>` : ""}
+          <a class="button button--primary" href="${escapeHtml(ctaLink)}" target="_blank" rel="noopener noreferrer">${escapeHtml(ctaLabel)}</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setupPopupControls() {
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest("[data-popup-close]")) return;
+    const popup = event.target.closest("[data-promo-popup]");
+    if (popup) popup.remove();
+  });
+}
+
 function setupProductMediaSwitcher() {
   productGrid.addEventListener("click", (event) => {
     const thumb = event.target.closest("[data-product-media-thumb]");
@@ -391,6 +535,104 @@ function setupProductMediaSwitcher() {
       button.classList.toggle("is-active", button === thumb);
     });
   });
+}
+
+function hydrateSeo(seo = {}, settings = {}) {
+  const title = normalizeText(seo.title, document.title);
+  document.title = title;
+  setMeta('meta[name="description"]', seo.description);
+  setMeta('meta[property="og:title"]', seo.ogTitle || seo.title);
+  setMeta('meta[property="og:description"]', seo.ogDescription || seo.description);
+  setMeta('meta[property="og:image"]', seo.ogImage);
+  setMeta('meta[property="og:url"]', settings.canonicalUrl);
+
+  const canonical = document.querySelector("[data-canonical-url]");
+  if (canonical && normalizeText(settings.canonicalUrl)) {
+    canonical.setAttribute("href", normalizeText(settings.canonicalUrl));
+  }
+}
+
+function hydrateSiteSettings(settings = {}) {
+  siteConfig = {
+    ...siteConfig,
+    ...settings,
+    links: { ...siteConfig.links },
+  };
+
+  setText("[data-brand-name]", siteConfig.brandName, defaultSiteConfig.brandName);
+  document.documentElement.setAttribute("data-brand", siteConfig.brandName || defaultSiteConfig.brandName);
+  setText("[data-brand-location]", siteConfig.location, defaultSiteConfig.location);
+  setText("[data-footer-domain]", siteConfig.domain, defaultSiteConfig.domain);
+  setText("[data-footer-copy]", `© ${siteConfig.year || defaultSiteConfig.year} ${siteConfig.brandName || defaultSiteConfig.brandName}`);
+
+  document.querySelectorAll("[data-site-logo]").forEach((logo) => {
+    logo.src = normalizeImage(settings.logo || "assets/logo.png");
+  });
+
+  const brandCopy = document.querySelector("[data-brand-card-copy]");
+  if (brandCopy) {
+    brandCopy.textContent = `${siteConfig.brandName || defaultSiteConfig.brandName} là thương hiệu phụ kiện lọc phong cách hiện đại, tập trung vào trải nghiệm gọn nhẹ và dễ tiếp cận trên mobile.`;
+  }
+}
+
+function hydrateContent(content = {}) {
+  const hero = content.hero || {};
+  const productsSection = content.productsSection || {};
+  const benefitsSection = content.benefitsSection || {};
+  const contactSection = content.contactSection || {};
+
+  setText("[data-hero-eyebrow]", hero.eyebrow, "Premium bio commerce landing page");
+  setText("[data-hero-title]", hero.title, "Giải pháp phụ kiện lọc nhỏ gọn cho trải nghiệm tiện lợi hơn.");
+  setText("[data-hero-lead]", hero.lead);
+  setText("[data-hero-primary-cta]", hero.primaryCtaLabel, "Xem sản phẩm");
+  setText("[data-hero-secondary-cta]", hero.secondaryCtaLabel, "Đặt hàng ngay");
+  setText("[data-products-eyebrow]", productsSection.eyebrow, "Sản phẩm nổi bật");
+  setText("[data-products-title]", productsSection.title, "Dòng sản phẩm được sắp xếp để khách xem và đặt hàng thật nhanh.");
+  setText("[data-products-description]", productsSection.description);
+  setText("[data-benefits-eyebrow]", benefitsSection.eyebrow, "Why ZOBO");
+  setText("[data-benefits-title]", benefitsSection.title, "Lý do thương hiệu tạo cảm giác gọn gàng, đáng tin và dễ mua.");
+  setText("[data-contact-eyebrow]", contactSection.eyebrow, "Liên hệ");
+  setText("[data-contact-title]", contactSection.title, "Kết nối qua kênh phù hợp nhất với khách của bạn.");
+  setText("[data-contact-description]", contactSection.description);
+
+  const chips = Array.isArray(hero.chips) ? hero.chips : [];
+  const chipsRoot = document.querySelector("[data-hero-chips]");
+  if (chipsRoot && chips.length) {
+    chipsRoot.innerHTML = chips.map((chip) => `<li>${escapeHtml(chip)}</li>`).join("");
+  }
+}
+
+function hydrateSocial(social = {}) {
+  const orderLink = normalizeText(social.orderLink, siteConfig.links.order);
+  siteConfig = {
+    ...siteConfig,
+    links: {
+      ...siteConfig.links,
+      order: orderLink,
+    },
+  };
+}
+
+async function loadCmsData() {
+  const [
+    content,
+    settings,
+    social,
+    banners,
+    vouchers,
+    popup,
+    seo,
+  ] = await Promise.all([
+    fetchJson("/data/content.json", {}),
+    fetchJson("/data/settings.json", {}),
+    fetchJson("/data/social.json", {}),
+    fetchJson("/data/banners.json", { banners: [] }),
+    fetchJson("/data/vouchers.json", { vouchers: [] }),
+    fetchJson("/data/popup.json", {}),
+    fetchJson("/data/seo.json", {}),
+  ]);
+
+  return { content, settings, social, banners, vouchers, popup, seo };
 }
 
 function observeRevealElements(scope = document) {
@@ -459,11 +701,21 @@ function setupNetlifyIdentity() {
 }
 
 async function bootstrap() {
-  renderBenefits();
-  renderContacts();
+  const cmsData = await loadCmsData();
+
+  hydrateSiteSettings(cmsData.settings);
+  hydrateSocial(cmsData.social);
+  hydrateSeo(cmsData.seo, cmsData.settings);
+  hydrateContent(cmsData.content);
+  renderBanners(cmsData.banners?.banners || []);
+  renderVouchers(cmsData.vouchers?.vouchers || []);
+  renderPopup(cmsData.popup);
+  renderBenefits(cmsData.content?.benefitsSection?.items || defaultBenefits);
+  renderContacts((cmsData.social?.channels || defaultContactChannels).filter((channel) => channel.isActive !== false));
   setupOrderCtas();
   setupNetlifyIdentity();
   setupProductMediaSwitcher();
+  setupPopupControls();
   renderLoadingState();
   observeRevealElements();
 

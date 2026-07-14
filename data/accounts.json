@@ -1,0 +1,4 @@
+{
+  "note": "Tài khoản admin được quản lý trong Netlify Identity. Vào Netlify Dashboard > Project configuration > Identity để mời, khóa hoặc xóa tài khoản.",
+  "identityUrl": "https://app.netlify.com/projects/thunderous-seahorse-11fa34/configuration/identity"
+}

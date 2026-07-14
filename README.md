@@ -2,12 +2,12 @@
 
 Website landing page ZOBO VN chạy trên Netlify, có trang quản trị `/admin` bằng Decap CMS.
 
-Bạn có thể thêm, sửa, xóa sản phẩm từ giao diện admin mà không cần sửa code thủ công.
+Bạn có thể thêm, sửa, xóa sản phẩm và quản lý nhiều phần của website từ giao diện admin mà không cần sửa code thủ công.
 
 ## Cách hoạt động
 
-- Trang chủ đọc sản phẩm từ `data/products.json`.
-- Trang `/admin` dùng Decap CMS để sửa file dữ liệu và upload ảnh.
+- Trang chủ đọc nội dung từ các file trong thư mục `data/`.
+- Trang `/admin` dùng Decap CMS để sửa dữ liệu và upload ảnh/video.
 - Khi bấm publish trong admin, Decap CMS commit thay đổi lên GitHub.
 - Netlify tự deploy lại website sau mỗi lần thay đổi.
 
@@ -25,7 +25,16 @@ Bạn có thể thêm, sửa, xóa sản phẩm từ giao diện admin mà khôn
 │  ├─ index.html
 │  └─ config.yml
 ├─ data/
-│  └─ products.json
+│  ├─ products.json
+│  ├─ content.json
+│  ├─ settings.json
+│  ├─ social.json
+│  ├─ banners.json
+│  ├─ vouchers.json
+│  ├─ categories.json
+│  ├─ popup.json
+│  ├─ seo.json
+│  └─ media.json
 ├─ assets/
 │  ├─ logo.png
 │  ├─ products/
@@ -105,11 +114,28 @@ Mở email mời, đặt mật khẩu, rồi đăng nhập tại:
 https://thunderous-seahorse-11fa34.netlify.app/admin
 ```
 
+## Các mục trong ZOBO CMS
+
+Trong `/admin` sẽ có các mục:
+
+- `Dashboard`: ghi chú nội bộ và việc cần làm.
+- `Sản phẩm`: thêm, sửa, xóa sản phẩm, ảnh, video, trạng thái hiển thị và đánh dấu bán chạy.
+- `Banner`: quản lý banner nổi bật trên website.
+- `Nội dung website`: sửa text hero, khu sản phẩm, khu lợi ích và khu liên hệ.
+- `Facebook / TikTok / YouTube / Zalo`: sửa link social và link đặt hàng.
+- `Voucher`: tạo mã ưu đãi hoặc chương trình khuyến mãi.
+- `Danh mục`: quản lý danh mục sản phẩm.
+- `Popup khuyến mãi`: bật/tắt popup khuyến mãi.
+- `Thư viện ảnh`: lưu ảnh/video quan trọng kèm ghi chú.
+- `Cài đặt website`: sửa tên thương hiệu, địa điểm, logo, domain.
+- `SEO`: sửa title, description và ảnh chia sẻ mạng xã hội.
+- `Quản lý tài khoản`: hướng dẫn quản lý tài khoản admin qua Netlify Identity.
+
 ## Cách sửa sản phẩm
 
 1. Vào `/admin`.
 2. Đăng nhập bằng tài khoản đã được Netlify mời.
-3. Chọn `San pham`.
+3. Chọn `Sản phẩm`.
 4. Thêm, sửa, xóa sản phẩm trong danh sách.
 5. Upload ảnh đại diện, thêm nhiều ảnh/video trong `Thư viện ảnh/video` nếu cần.
 6. Bấm `Publish`.
@@ -128,6 +154,7 @@ Mỗi sản phẩm trong `data/products.json` có các trường:
 - `gallery`
 - `category`
 - `badge`
+- `isBestSeller`
 - `buyLink`
 - `isActive`
 - `createdAt`
