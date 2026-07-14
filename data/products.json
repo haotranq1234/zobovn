@@ -1,0 +1,69 @@
+{
+  "products": [
+    {
+      "id": "full-size",
+      "name": "Đầu lọc thuốc lá Full Size",
+      "price": "Liên hệ",
+      "description": "Bộ 5 đầu lọc Full Size, đóng gói gọn và dễ trưng bày.",
+      "image": "assets/products/full-size-pack.png",
+      "category": "Full Size",
+      "badge": "Bán chạy",
+      "buyLink": "https://zobovn.store/dat-hang",
+      "isActive": true,
+      "createdAt": "2026-07-15T00:00:00.000Z",
+      "updatedAt": "2026-07-15T00:00:00.000Z"
+    },
+    {
+      "id": "combo-5-in-1",
+      "name": "Siêu Combo 5 in 1",
+      "price": "Liên hệ",
+      "description": "Bộ ảnh combo 5 mẫu cho nhiều size, bố cục rõ và dễ xem.",
+      "image": "assets/products/combo-5-in-1.png",
+      "category": "Combo",
+      "badge": "Combo",
+      "buyLink": "https://zobovn.store/dat-hang",
+      "isActive": true,
+      "createdAt": "2026-07-15T00:00:00.000Z",
+      "updatedAt": "2026-07-15T00:00:00.000Z"
+    },
+    {
+      "id": "physical-filter",
+      "name": "Dòng sản phẩm lọc vật lý",
+      "price": "Liên hệ",
+      "description": "Mẫu sản phẩm mang phong cách hiện đại, dễ nhận diện theo từng phiên bản.",
+      "image": "assets/products/physical-filter-series.png",
+      "category": "Signature",
+      "badge": "Signature",
+      "buyLink": "https://zobovn.store/dat-hang",
+      "isActive": true,
+      "createdAt": "2026-07-15T00:00:00.000Z",
+      "updatedAt": "2026-07-15T00:00:00.000Z"
+    },
+    {
+      "id": "slim",
+      "name": "Tẩu lọc Slim nhiều màu",
+      "price": "Liên hệ",
+      "description": "Mẫu slim với nhiều phiên bản màu, dễ chọn theo gu cá nhân.",
+      "image": "assets/products/multi-size-physical.png",
+      "category": "Slim",
+      "badge": "Slim",
+      "buyLink": "https://zobovn.store/dat-hang",
+      "isActive": true,
+      "createdAt": "2026-07-15T00:00:00.000Z",
+      "updatedAt": "2026-07-15T00:00:00.000Z"
+    },
+    {
+      "id": "full-size-five-pcs",
+      "name": "Hộp 5 đầu lọc Full Size",
+      "price": "Liên hệ",
+      "description": "Phiên bản hộp 5 sản phẩm với bố cục rõ ràng, dễ nhìn.",
+      "image": "assets/products/full-size-5pcs.png",
+      "category": "5 PCS",
+      "badge": "5 PCS",
+      "buyLink": "https://zobovn.store/dat-hang",
+      "isActive": true,
+      "createdAt": "2026-07-15T00:00:00.000Z",
+      "updatedAt": "2026-07-15T00:00:00.000Z"
+    }
+  ]
+}

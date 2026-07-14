@@ -1,5 +1,4 @@
 import { benefits, contactChannels, siteConfig } from "./data.js";
-import { getFirebaseServices } from "./firebase.js";
 
 const productGrid = document.querySelector("[data-product-grid]");
 const benefitGrid = document.querySelector("[data-benefit-grid]");
@@ -8,7 +7,6 @@ const heroPrimary = document.querySelector("[data-hero-primary]");
 const heroSecondary = document.querySelector("[data-hero-secondary]");
 
 let revealObserver;
-let firebaseUnsubscribe = null;
 
 const iconMap = {
   compact: `
@@ -88,15 +86,18 @@ function sanitizeUrl(value, fallback) {
   }
 }
 
+function normalizeImage(value) {
+  const image = normalizeText(value, "assets/logo.png");
+  if (image.startsWith("http") || image.startsWith("/")) {
+    return image;
+  }
+  return image;
+}
+
 function formatPrice(value) {
   const raw = normalizeText(value);
-  if (!raw) {
-    return "Liên hệ";
-  }
-
-  if (/đ|vnd|vnđ|liên hệ/i.test(raw)) {
-    return raw;
-  }
+  if (!raw) return "Liên hệ";
+  if (/đ|vnd|vnđ|liên hệ/i.test(raw)) return raw;
 
   const numeric = Number(raw);
   if (Number.isFinite(numeric)) {
@@ -108,24 +109,14 @@ function formatPrice(value) {
 
 function timestampToMillis(value) {
   if (!value) return 0;
-  if (typeof value.toMillis === "function") return value.toMillis();
-  if (typeof value.seconds === "number") {
-    return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1e6);
-  }
   const parsed = new Date(value).getTime();
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function sortProducts(items) {
   return [...items].sort((first, second) => {
-    const right =
-      timestampToMillis(second.updatedAt) ||
-      timestampToMillis(second.createdAt) ||
-      timestampToMillis(second.__createdAt);
-    const left =
-      timestampToMillis(first.updatedAt) ||
-      timestampToMillis(first.createdAt) ||
-      timestampToMillis(first.__createdAt);
+    const right = timestampToMillis(second.updatedAt) || timestampToMillis(second.createdAt);
+    const left = timestampToMillis(first.updatedAt) || timestampToMillis(first.createdAt);
     return right - left;
   });
 }
@@ -186,7 +177,7 @@ function renderEmptyState() {
     <article class="empty-state reveal">
       <span class="badge">Chờ cập nhật</span>
       <h3>Chưa có sản phẩm đang hiển thị</h3>
-      <p>Hãy đăng nhập /admin để thêm sản phẩm đầu tiên. Khi bật trạng thái hoạt động, website sẽ tự cập nhật ngay.</p>
+      <p>Vào /admin để thêm sản phẩm đầu tiên. Sau khi Netlify deploy xong, website sẽ cập nhật theo dữ liệu mới.</p>
       <div class="empty-state__actions">
         <a class="button button--primary" href="/admin">Mở trang quản trị</a>
         <a class="button button--secondary" href="${escapeHtml(siteConfig.links.messenger)}" target="_blank" rel="noopener noreferrer">Liên hệ Messenger</a>
@@ -217,18 +208,12 @@ function renderHeroProducts(items) {
     const image = card.querySelector("[data-hero-primary-image], [data-hero-secondary-image]");
     const title = card.querySelector("[data-hero-primary-title], [data-hero-secondary-title]");
 
-    if (badge) {
-      badge.textContent = normalizeText(product.badge, fallback.badge);
-    }
-
+    if (badge) badge.textContent = normalizeText(product.badge, fallback.badge);
     if (image) {
-      image.src = normalizeText(product.image, fallback.image);
+      image.src = normalizeImage(product.image);
       image.alt = normalizeText(product.name, defaultTitle);
     }
-
-    if (title) {
-      title.textContent = normalizeText(product.name, defaultTitle);
-    }
+    if (title) title.textContent = normalizeText(product.name, defaultTitle);
   });
 }
 
@@ -240,13 +225,13 @@ function renderProductCards(items) {
 
   productGrid.innerHTML = items
     .map((product) => {
-      const productId = escapeHtml(product.id || product.firestoreId || "");
+      const productId = escapeHtml(product.id || "");
       const category = normalizeText(product.category, "Sản phẩm");
       const badge = normalizeText(product.badge, "Mới");
       const price = formatPrice(product.price);
       const buyLink = sanitizeUrl(product.buyLink, siteConfig.links.order);
       const description = normalizeText(product.description, "Sản phẩm đang được cập nhật.");
-      const image = normalizeText(product.image, "assets/logo.png");
+      const image = normalizeImage(product.image);
       const name = normalizeText(product.name, "Tên sản phẩm");
 
       return `
@@ -310,39 +295,15 @@ function observeRevealElements(scope = document) {
   });
 }
 
-async function subscribeToProducts() {
-  const { app, getFirestore, collection, query, where, onSnapshot } = await getFirebaseServices();
-  const db = getFirestore(app);
-  const productsQuery = query(collection(db, "products"), where("isActive", "==", true));
+async function loadProducts() {
+  const response = await fetch("/data/products.json", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Không tải được data/products.json.");
+  }
 
-  firebaseUnsubscribe = onSnapshot(
-    productsQuery,
-    (snapshot) => {
-      const products = snapshot.docs.map((docSnapshot) => ({
-        firestoreId: docSnapshot.id,
-        ...docSnapshot.data(),
-      }));
-
-      const sortedProducts = sortProducts(products);
-
-      renderHeroProducts(sortedProducts);
-      renderProductCards(sortedProducts);
-    },
-    (error) => {
-      console.error("Firestore products listener error:", error);
-      productGrid.innerHTML = `
-        <article class="empty-state reveal">
-          <span class="badge">Lỗi tải dữ liệu</span>
-          <h3>Không thể tải sản phẩm lúc này</h3>
-          <p>Vui lòng thử lại sau hoặc kiểm tra cấu hình Firebase.</p>
-          <div class="empty-state__actions">
-            <a class="button button--secondary" href="${escapeHtml(siteConfig.links.messenger)}" target="_blank" rel="noopener noreferrer">Liên hệ Messenger</a>
-          </div>
-        </article>
-      `;
-      observeRevealElements(productGrid);
-    },
-  );
+  const data = await response.json();
+  const products = Array.isArray(data) ? data : data.products || [];
+  return sortProducts(products.filter((product) => product.isActive !== false));
 }
 
 function setupOrderCtas() {
@@ -354,22 +315,38 @@ function setupOrderCtas() {
   });
 }
 
+function setupNetlifyIdentity() {
+  if (!window.netlifyIdentity) return;
+
+  window.netlifyIdentity.on("init", (user) => {
+    if (!user && window.location.hash.includes("invite_token")) {
+      window.netlifyIdentity.open("signup");
+    }
+    if (!user && window.location.hash.includes("recovery_token")) {
+      window.netlifyIdentity.open("recovery");
+    }
+  });
+}
+
 async function bootstrap() {
   renderBenefits();
   renderContacts();
   setupOrderCtas();
+  setupNetlifyIdentity();
   renderLoadingState();
   observeRevealElements();
 
   try {
-    await subscribeToProducts();
+    const products = await loadProducts();
+    renderHeroProducts(products);
+    renderProductCards(products);
   } catch (error) {
-    console.error("Firebase bootstrap error:", error);
+    console.error(error);
     productGrid.innerHTML = `
       <article class="empty-state reveal">
-        <span class="badge">Cần cấu hình</span>
-        <h3>Website chưa kết nối Firebase</h3>
-        <p>Hãy thêm biến môi trường Firebase và kiểm tra API config trước khi deploy.</p>
+        <span class="badge">Cần dữ liệu</span>
+        <h3>Website chưa tải được sản phẩm</h3>
+        <p>Kiểm tra file data/products.json hoặc cấu hình publish trên Netlify.</p>
         <div class="empty-state__actions">
           <a class="button button--secondary" href="/admin">Mở trang quản trị</a>
         </div>
@@ -381,9 +358,3 @@ async function bootstrap() {
 
 document.documentElement.setAttribute("data-brand", siteConfig.brandName);
 bootstrap();
-
-window.addEventListener("beforeunload", () => {
-  if (typeof firebaseUnsubscribe === "function") {
-    firebaseUnsubscribe();
-  }
-});

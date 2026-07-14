@@ -1,115 +1,124 @@
 # ZOBO VN
 
-Website ZOBO VN hiện tại đã được nâng cấp thành landing page + admin dashboard dùng Firebase.
+Website landing page ZOBO VN chạy trên Netlify, có trang quản trị `/admin` bằng Decap CMS.
 
-- Trang chủ đọc sản phẩm trực tiếp từ Firestore.
-- Trang quản trị nằm ở `/admin`.
-- Admin đăng nhập bằng Firebase Authentication email/password.
-- Ảnh sản phẩm upload lên Firebase Storage.
-- Site sẵn sàng deploy lên Vercel.
+Bạn có thể thêm, sửa, xóa sản phẩm từ giao diện admin mà không cần sửa code thủ công.
 
-## Tính năng
+## Cách hoạt động
 
-- Giữ nguyên phong cách thiết kế hiện tại: premium, tối, hiện đại, mobile-first.
-- Trang chủ vẫn có hero, sản phẩm nổi bật, lý do chọn ZOBO, liên hệ, CTA nổi.
-- Sản phẩm không còn hardcode trong code giao diện.
-- Admin dashboard có:
-  - Danh sách sản phẩm
-  - Thêm sản phẩm
-  - Sửa sản phẩm
-  - Xóa sản phẩm
-  - Upload ảnh
-  - Bật/tắt sản phẩm
-  - Preview ảnh
-  - Tìm kiếm sản phẩm
-  - Nạp dữ liệu mẫu ban đầu
+- Trang chủ đọc sản phẩm từ `data/products.json`.
+- Trang `/admin` dùng Decap CMS để sửa file dữ liệu và upload ảnh.
+- Khi bấm publish trong admin, Decap CMS commit thay đổi lên GitHub.
+- Netlify tự deploy lại website sau mỗi lần thay đổi.
 
-## Cấu trúc thư mục
+## Link hiện tại
+
+- Website: `https://thunderous-seahorse-11fa34.netlify.app/`
+- Admin: `https://thunderous-seahorse-11fa34.netlify.app/admin`
+
+## Cấu trúc quan trọng
 
 ```text
 .
 ├─ index.html
 ├─ admin/
 │  ├─ index.html
-│  ├─ admin.css
-│  └─ admin.js
-├─ api/
-│  └─ firebase-config.js
-├─ js/
-│  ├─ data.js
-│  ├─ firebase.js
-│  └─ main.js
+│  └─ config.yml
+├─ data/
+│  └─ products.json
 ├─ assets/
 │  ├─ logo.png
-│  ├─ favicon.svg
-│  └─ products/
-│     ├─ full-size-pack.png
-│     ├─ combo-5-in-1.png
-│     ├─ physical-filter-series.png
-│     ├─ multi-size-physical.png
-│     └─ full-size-5pcs.png
-├─ firestore.rules
-├─ storage.rules
-├─ vercel.json
-├─ .env.example
+│  ├─ products/
+│  └─ uploads/
+├─ js/
+│  ├─ data.js
+│  └─ main.js
+├─ netlify.toml
 └─ styles.css
 ```
 
-## Chạy local
+## Bật admin trên Netlify
 
-Vì project có API route `/api/firebase-config`, cách chạy đúng là dùng Vercel CLI.
+### 1. Vào Netlify site
 
-### 1. Cài Vercel CLI
+Mở Netlify Dashboard, chọn site:
 
-```bash
-npm i -g vercel
+```text
+thunderous-seahorse-11fa34
 ```
 
-### 2. Tạo file `.env`
+### 2. Bật Identity
 
-Copy `.env.example` thành `.env.local` và điền giá trị Firebase thật.
+Vào:
 
-### 3. Chạy local
-
-```bash
-vercel dev
+```text
+Site configuration > Identity
 ```
 
-Sau đó mở:
+Bấm:
 
-- Trang chủ: `http://localhost:3000`
-- Admin: `http://localhost:3000/admin`
+```text
+Enable Identity
+```
 
-## Cấu hình Firebase
+### 3. Chỉ cho người được mời đăng ký
 
-### 1. Tạo Firebase Project
+Trong Identity settings, đặt:
 
-- Vào Firebase Console và tạo project mới.
-- Bật Web App để lấy cấu hình Firebase.
+```text
+Registration preferences: Invite only
+```
 
-### 2. Bật Authentication
+### 4. Bật Git Gateway
 
-- Vào **Authentication**.
-- Bật **Email/Password**.
-- Tạo tài khoản admin với email khớp biến `ADMIN_EMAIL`.
+Vào:
 
-Mặc định repo đang dùng:
+```text
+Site configuration > Identity > Services
+```
 
-- `haotranq1234@gmail.com`
+Bật:
 
-Nếu đổi email admin, bạn phải cập nhật đồng bộ:
+```text
+Git Gateway
+```
 
-- `ADMIN_EMAIL` trong `.env`
-- `firestore.rules`
-- `storage.rules`
+Git Gateway là phần cho phép admin sửa nội dung và commit ngược về GitHub.
 
-### 3. Bật Firestore
+### 5. Mời tài khoản admin
 
-- Tạo Firestore Database.
-- Chọn mode phù hợp với project của bạn.
-- Collection cần dùng: `products`
+Vào:
 
-Mỗi document sản phẩm nên có các field:
+```text
+Identity > Invite users
+```
+
+Mời email:
+
+```text
+haotranq1234@gmail.com
+```
+
+Mở email mời, đặt mật khẩu, rồi đăng nhập tại:
+
+```text
+https://thunderous-seahorse-11fa34.netlify.app/admin
+```
+
+## Cách sửa sản phẩm
+
+1. Vào `/admin`.
+2. Đăng nhập bằng tài khoản đã được Netlify mời.
+3. Chọn `San pham`.
+4. Thêm, sửa, xóa sản phẩm trong danh sách.
+5. Upload ảnh sản phẩm nếu cần.
+6. Bấm `Publish`.
+
+Sau khi publish, Netlify sẽ tự deploy lại. Thường mất khoảng vài chục giây.
+
+## Dữ liệu sản phẩm
+
+Mỗi sản phẩm trong `data/products.json` có các trường:
 
 - `id`
 - `name`
@@ -119,128 +128,32 @@ Mỗi document sản phẩm nên có các field:
 - `category`
 - `badge`
 - `buyLink`
+- `isActive`
 - `createdAt`
 - `updatedAt`
-- `isActive`
 
-Lưu ý:
+Nếu `isActive` là `false`, sản phẩm sẽ không hiện trên trang chủ.
 
-- `image` là URL ảnh từ Firebase Storage.
-- `isActive = true` thì sản phẩm mới hiển thị trên homepage.
-- Code cũng lưu thêm `imagePath` để xóa ảnh cũ trong Storage khi cần.
+## Chạy local
 
-### 4. Bật Storage
+Site này là static website, có thể chạy bằng server tĩnh:
 
-- Vào **Storage** và bật bucket.
-- Ảnh từ admin sẽ được upload lên đây.
-
-### 5. Import rules
-
-Mở file sau trong repo:
-
-- [firestore.rules](./firestore.rules)
-- [storage.rules](./storage.rules)
-
-Rồi dán vào phần Rules tương ứng trong Firebase Console.
-
-## Biến môi trường
-
-Tạo `.env.local` từ `.env.example` với các biến:
-
-```env
-FIREBASE_API_KEY=
-FIREBASE_AUTH_DOMAIN=
-FIREBASE_PROJECT_ID=
-FIREBASE_STORAGE_BUCKET=
-FIREBASE_MESSAGING_SENDER_ID=
-FIREBASE_APP_ID=
-FIREBASE_MEASUREMENT_ID=
-ADMIN_EMAIL=haotranq1234@gmail.com
+```bash
+python -m http.server 8000
 ```
 
-## Cấu hình Vercel
+Sau đó mở:
 
-### 1. Kết nối repo
+```text
+http://localhost:8000
+```
 
-- Push code lên GitHub.
-- Import repo vào Vercel.
+Admin Decap CMS hoạt động tốt nhất khi chạy trên Netlify vì cần Identity + Git Gateway.
 
-### 2. Add Environment Variables
+## Ghi chú
 
-Thêm các biến ở mục Environment Variables trong Vercel Project Settings.
-
-### 3. Deploy
-
-- Vercel sẽ tự phát hiện static site + API route `/api/firebase-config`.
-- Route `/admin` đã được cấu hình trong `vercel.json`.
-
-## Cách dùng admin dashboard
-
-### Đăng nhập
-
-- Mở `/admin`
-- Đăng nhập bằng email/password Firebase Authentication
-
-### Nạp dữ liệu mẫu ban đầu
-
-Khi Firestore chưa có sản phẩm, bấm **Nạp dữ liệu mẫu** trong admin.
-
-Nút này sẽ:
-
-- Lấy ảnh mẫu từ repo
-- Upload ảnh lên Firebase Storage
-- Tạo document trong Firestore
-
-Sau khi bạn thay bằng ảnh thật riêng của bạn, chỉ cần sửa sản phẩm ngay trong admin.
-
-### Thêm sản phẩm
-
-- Điền form bên phải
-- Upload ảnh
-- Bấm lưu
-
-### Sửa sản phẩm
-
-- Bấm nút **Sửa** ở danh sách
-- Chỉnh thông tin
-- Bấm cập nhật
-
-### Xóa sản phẩm
-
-- Bấm **Xóa**
-- Xác nhận thao tác
-
-### Bật / tắt sản phẩm
-
-- Dùng công tắc **Hiển thị**
-- Khi tắt, sản phẩm sẽ không còn xuất hiện ở homepage
-
-## Lưu ý về hình ảnh
-
-- Homepage không đọc ảnh trực tiếp từ repository.
-- Ảnh hiển thị trên site lấy từ Firebase Storage.
-- Các file ảnh mẫu trong repo chỉ phục vụ bước nạp dữ liệu ban đầu.
-
-## Deploy trên Vercel
-
-1. Push code lên GitHub branch `main`.
-2. Import repo vào Vercel.
-3. Thêm biến môi trường.
-4. Deploy.
-5. Truy cập:
-   - Trang chủ: `/`
-   - Admin: `/admin`
-
-## Gợi ý kiểm tra sau deploy
-
-- Trang chủ load được sản phẩm từ Firestore.
-- `/admin` mở được form login.
-- Đăng nhập xong có thể thêm/sửa/xóa sản phẩm.
-- Upload ảnh lên Storage thành công.
-- Bật/tắt sản phẩm xong homepage cập nhật.
-
-## Ghi chú kỹ thuật
-
-- Không dùng framework nặng để giữ tốc độ tải tốt.
-- Firebase config không hardcode trong source; được đọc từ API route `/api/firebase-config`.
-- Homepage dùng realtime listener để cập nhật sản phẩm ngay khi admin thay đổi dữ liệu.
+- Không còn dùng Firebase.
+- Không cần Firestore.
+- Không cần Firebase Storage.
+- Không cần biến môi trường.
+- Ảnh upload từ admin sẽ được lưu vào `assets/uploads/`.

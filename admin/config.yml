@@ -1,0 +1,34 @@
+backend:
+  name: git-gateway
+  branch: main
+
+locale: vi
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+publish_mode: simple
+
+collections:
+  - name: "site_data"
+    label: "Quản lý website"
+    files:
+      - name: "products"
+        label: "Sản phẩm"
+        file: "data/products.json"
+        format: "json"
+        fields:
+          - label: "Danh sách sản phẩm"
+            name: "products"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string", hint: "Viết không dấu, không khoảng trắng. Ví dụ: full-size-5pcs" }
+              - { label: "Tên sản phẩm", name: "name", widget: "string" }
+              - { label: "Giá", name: "price", widget: "string", default: "Liên hệ" }
+              - { label: "Mô tả", name: "description", widget: "text" }
+              - { label: "Ảnh sản phẩm", name: "image", widget: "image" }
+              - { label: "Danh mục", name: "category", widget: "string", required: false }
+              - { label: "Badge", name: "badge", widget: "string", required: false }
+              - { label: "Link đặt hàng", name: "buyLink", widget: "string", required: false }
+              - { label: "Hiển thị trên website", name: "isActive", widget: "boolean", default: true }
+              - { label: "Ngày tạo", name: "createdAt", widget: "datetime", required: false }
+              - { label: "Ngày cập nhật", name: "updatedAt", widget: "datetime", required: false }
