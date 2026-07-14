@@ -6,9 +6,333 @@
     <meta name="robots" content="noindex,nofollow" />
     <title>ZOBO CMS</title>
     <link rel="icon" href="../assets/logo.png" type="image/png" />
+    <link rel="stylesheet" href="admin.css" />
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="admin.js" defer></script>
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
+    <main class="admin-shell">
+      <section class="login-screen" data-login-screen>
+        <div class="login-card">
+          <img src="../assets/logo.png" alt="ZOBO VN" />
+          <p class="eyebrow">ZOBO CMS</p>
+          <h1>Quản lý website dễ hơn, gọn hơn.</h1>
+          <p>Đăng nhập bằng tài khoản Netlify đã được mời để thêm sản phẩm, đổi banner, sửa nội dung và publish website.</p>
+          <button class="primary-btn" type="button" data-login-button>Đăng nhập admin</button>
+          <a href="../" class="ghost-link">Quay lại website</a>
+        </div>
+      </section>
+
+      <section class="app-shell is-hidden" data-app-shell>
+        <aside class="sidebar">
+          <a class="brand" href="../">
+            <img src="../assets/logo.png" alt="" />
+            <span>
+              <strong>ZOBO CMS</strong>
+              <small data-user-email>Admin</small>
+            </span>
+          </a>
+
+          <nav class="sidebar-nav" aria-label="Điều hướng admin">
+            <button class="is-active" type="button" data-view-button="dashboard">Tổng quan</button>
+            <button type="button" data-view-button="products">Sản phẩm</button>
+            <button type="button" data-view-button="content">Nội dung</button>
+            <button type="button" data-view-button="marketing">Marketing</button>
+            <button type="button" data-view-button="settings">Cài đặt</button>
+            <button type="button" data-view-button="accounts">Tài khoản</button>
+          </nav>
+
+          <div class="sidebar-footer">
+            <a href="../" target="_blank" rel="noopener noreferrer">Xem website</a>
+            <button type="button" data-logout-button>Đăng xuất</button>
+          </div>
+        </aside>
+
+        <div class="workspace">
+          <header class="topbar">
+            <div>
+              <p class="eyebrow" data-view-eyebrow>Dashboard</p>
+              <h1 data-view-title>Tổng quan ZOBO VN</h1>
+            </div>
+            <div class="topbar-actions">
+              <span class="save-state" data-save-state>Đã sẵn sàng</span>
+              <button class="secondary-btn" type="button" data-refresh-button>Tải lại</button>
+              <button class="primary-btn" type="button" data-save-button>Lưu & Publish</button>
+            </div>
+          </header>
+
+          <section class="view is-active" data-view="dashboard">
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span>Sản phẩm</span>
+                <strong data-stat-products>0</strong>
+                <p>Đang quản lý trong CMS</p>
+              </article>
+              <article class="stat-card">
+                <span>Đang hiển thị</span>
+                <strong data-stat-active>0</strong>
+                <p>Sản phẩm khách có thể thấy</p>
+              </article>
+              <article class="stat-card">
+                <span>Bán chạy</span>
+                <strong data-stat-best>0</strong>
+                <p>Sản phẩm được ưu tiên</p>
+              </article>
+              <article class="stat-card">
+                <span>Marketing</span>
+                <strong data-stat-marketing>0</strong>
+                <p>Banner, voucher, popup đang bật</p>
+              </article>
+            </div>
+
+            <div class="quick-panel">
+              <div>
+                <h2>Việc hay dùng</h2>
+                <p>Chọn nhanh để chỉnh đúng phần, không phải nhìn form dài như trước.</p>
+              </div>
+              <div class="quick-actions">
+                <button type="button" data-shortcut="products">Thêm / sửa sản phẩm</button>
+                <button type="button" data-shortcut="marketing">Bật khuyến mãi</button>
+                <button type="button" data-shortcut="settings">Đổi link đặt hàng</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" data-view="products">
+            <div class="product-layout">
+              <aside class="product-list-panel">
+                <div class="panel-heading">
+                  <div>
+                    <h2>Sản phẩm</h2>
+                    <p data-product-count>0 sản phẩm</p>
+                  </div>
+                  <button class="small-btn" type="button" data-new-product>Thêm mới</button>
+                </div>
+                <label class="search-box">
+                  <span>Tìm sản phẩm</span>
+                  <input type="search" placeholder="Nhập tên sản phẩm..." data-product-search />
+                </label>
+                <div class="product-list" data-product-list></div>
+              </aside>
+
+              <form class="editor-card" data-product-form>
+                <div class="panel-heading">
+                  <div>
+                    <h2 data-product-editor-title>Chi tiết sản phẩm</h2>
+                    <p>Thông tin khách sẽ thấy trên website.</p>
+                  </div>
+                  <button class="danger-btn" type="button" data-delete-product>Xóa</button>
+                </div>
+
+                <div class="form-grid">
+                  <label>
+                    <span>Tên sản phẩm</span>
+                    <input name="name" type="text" required />
+                  </label>
+                  <label>
+                    <span>Giá</span>
+                    <input name="price" type="text" placeholder="Liên hệ" />
+                  </label>
+                  <label>
+                    <span>Danh mục</span>
+                    <input name="category" type="text" placeholder="Full Size" />
+                  </label>
+                  <label>
+                    <span>Badge</span>
+                    <input name="badge" type="text" placeholder="Bán chạy" />
+                  </label>
+                </div>
+
+                <label>
+                  <span>Mô tả</span>
+                  <textarea name="description" rows="4"></textarea>
+                </label>
+
+                <label>
+                  <span>Link đặt hàng</span>
+                  <input name="buyLink" type="url" placeholder="https://..." />
+                </label>
+
+                <div class="switch-row">
+                  <label class="switch">
+                    <input name="isActive" type="checkbox" />
+                    <span>Hiển thị trên website</span>
+                  </label>
+                  <label class="switch">
+                    <input name="isBestSeller" type="checkbox" />
+                    <span>Đánh dấu bán chạy</span>
+                  </label>
+                </div>
+
+                <div class="media-editor">
+                  <div>
+                    <h3>Ảnh đại diện</h3>
+                    <p>Ảnh chính của sản phẩm.</p>
+                    <input name="image" type="hidden" />
+                    <input type="file" accept="image/*" data-cover-upload />
+                    <input class="path-input" name="imagePath" type="text" placeholder="assets/uploads/..." />
+                  </div>
+                  <figure>
+                    <img src="../assets/logo.png" alt="" data-cover-preview />
+                  </figure>
+                </div>
+
+                <div class="gallery-editor">
+                  <div class="panel-heading">
+                    <div>
+                      <h3>Ảnh / video trong sản phẩm</h3>
+                      <p>Bấm thêm media để tạo gallery.</p>
+                    </div>
+                    <button class="small-btn" type="button" data-add-gallery>Thêm media</button>
+                  </div>
+                  <div class="gallery-list" data-gallery-list></div>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <section class="view" data-view="content">
+            <form class="stacked-card" data-content-form>
+              <h2>Nội dung trang chủ</h2>
+              <label>
+                <span>Dòng nhỏ hero</span>
+                <input name="hero.eyebrow" type="text" />
+              </label>
+              <label>
+                <span>Tiêu đề chính</span>
+                <textarea name="hero.title" rows="2"></textarea>
+              </label>
+              <label>
+                <span>Mô tả hero</span>
+                <textarea name="hero.lead" rows="3"></textarea>
+              </label>
+              <div class="form-grid">
+                <label>
+                  <span>Tiêu đề khu sản phẩm</span>
+                  <textarea name="productsSection.title" rows="2"></textarea>
+                </label>
+                <label>
+                  <span>Tiêu đề khu liên hệ</span>
+                  <textarea name="contactSection.title" rows="2"></textarea>
+                </label>
+              </div>
+            </form>
+          </section>
+
+          <section class="view" data-view="marketing">
+            <div class="marketing-grid">
+              <form class="stacked-card" data-banner-form>
+                <h2>Banner</h2>
+                <label class="switch">
+                  <input name="isActive" type="checkbox" />
+                  <span>Bật banner</span>
+                </label>
+                <label>
+                  <span>Tiêu đề banner</span>
+                  <input name="title" type="text" />
+                </label>
+                <label>
+                  <span>Mô tả</span>
+                  <textarea name="description" rows="3"></textarea>
+                </label>
+              </form>
+
+              <form class="stacked-card" data-popup-form>
+                <h2>Popup khuyến mãi</h2>
+                <label class="switch">
+                  <input name="isActive" type="checkbox" />
+                  <span>Bật popup</span>
+                </label>
+                <label>
+                  <span>Tiêu đề popup</span>
+                  <input name="title" type="text" />
+                </label>
+                <label>
+                  <span>Nội dung</span>
+                  <textarea name="description" rows="3"></textarea>
+                </label>
+              </form>
+
+              <form class="stacked-card" data-voucher-form>
+                <h2>Voucher đầu tiên</h2>
+                <label class="switch">
+                  <input name="isActive" type="checkbox" />
+                  <span>Bật voucher</span>
+                </label>
+                <label>
+                  <span>Mã voucher</span>
+                  <input name="code" type="text" />
+                </label>
+                <label>
+                  <span>Tiêu đề</span>
+                  <input name="title" type="text" />
+                </label>
+              </form>
+            </div>
+          </section>
+
+          <section class="view" data-view="settings">
+            <div class="marketing-grid">
+              <form class="stacked-card" data-settings-form>
+                <h2>Cài đặt website</h2>
+                <label>
+                  <span>Tên thương hiệu</span>
+                  <input name="brandName" type="text" />
+                </label>
+                <label>
+                  <span>Địa điểm</span>
+                  <input name="location" type="text" />
+                </label>
+                <label>
+                  <span>Domain</span>
+                  <input name="domain" type="text" />
+                </label>
+              </form>
+
+              <form class="stacked-card" data-social-form>
+                <h2>Link bán hàng</h2>
+                <label>
+                  <span>Link đặt hàng</span>
+                  <input name="orderLink" type="url" />
+                </label>
+                <label>
+                  <span>Facebook</span>
+                  <input name="facebook" type="url" />
+                </label>
+                <label>
+                  <span>TikTok</span>
+                  <input name="tiktok" type="url" />
+                </label>
+              </form>
+
+              <form class="stacked-card" data-seo-form>
+                <h2>SEO</h2>
+                <label>
+                  <span>Title Google</span>
+                  <input name="title" type="text" />
+                </label>
+                <label>
+                  <span>Description Google</span>
+                  <textarea name="description" rows="4"></textarea>
+                </label>
+              </form>
+            </div>
+          </section>
+
+          <section class="view" data-view="accounts">
+            <article class="quick-panel">
+              <div>
+                <h2>Quản lý tài khoản admin</h2>
+                <p>Tài khoản vẫn quản lý trong Netlify Identity để an toàn. Website tĩnh không nên tự lưu mật khẩu.</p>
+              </div>
+              <div class="quick-actions">
+                <a href="https://app.netlify.com/projects/thunderous-seahorse-11fa34/configuration/identity" target="_blank" rel="noopener noreferrer">Mở Netlify Identity</a>
+                <button type="button" data-logout-button>Đăng xuất</button>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
   </body>
 </html>

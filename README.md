@@ -1,14 +1,15 @@
 # ZOBO VN
 
-Website landing page ZOBO VN chạy trên Netlify, có trang quản trị `/admin` bằng Decap CMS.
+Website landing page ZOBO VN chạy trên Netlify, có trang quản trị `/admin` dạng dashboard riêng cho ZOBO CMS.
 
 Bạn có thể thêm, sửa, xóa sản phẩm và quản lý nhiều phần của website từ giao diện admin mà không cần sửa code thủ công.
 
 ## Cách hoạt động
 
 - Trang chủ đọc nội dung từ các file trong thư mục `data/`.
-- Trang `/admin` dùng Decap CMS để sửa dữ liệu và upload ảnh/video.
-- Khi bấm publish trong admin, Decap CMS commit thay đổi lên GitHub.
+- Trang `/admin` dùng Netlify Identity để đăng nhập.
+- Dashboard ZOBO CMS lưu dữ liệu và upload ảnh/video qua Netlify Git Gateway.
+- Khi bấm `Lưu & Publish` trong admin, thay đổi được commit lên GitHub.
 - Netlify tự deploy lại website sau mỗi lần thay đổi.
 
 ## Link hiện tại
@@ -118,18 +119,12 @@ https://thunderous-seahorse-11fa34.netlify.app/admin
 
 Trong `/admin` sẽ có các mục:
 
-- `Dashboard`: ghi chú nội bộ và việc cần làm.
+- `Tổng quan`: xem nhanh số sản phẩm, sản phẩm đang hiện, bán chạy và marketing đang bật.
 - `Sản phẩm`: thêm, sửa, xóa sản phẩm, ảnh, video, trạng thái hiển thị và đánh dấu bán chạy.
-- `Banner`: quản lý banner nổi bật trên website.
-- `Nội dung website`: sửa text hero, khu sản phẩm, khu lợi ích và khu liên hệ.
-- `Facebook / TikTok / YouTube / Zalo`: sửa link social và link đặt hàng.
-- `Voucher`: tạo mã ưu đãi hoặc chương trình khuyến mãi.
-- `Danh mục`: quản lý danh mục sản phẩm.
-- `Popup khuyến mãi`: bật/tắt popup khuyến mãi.
-- `Thư viện ảnh`: lưu ảnh/video quan trọng kèm ghi chú.
-- `Cài đặt website`: sửa tên thương hiệu, địa điểm, logo, domain.
-- `SEO`: sửa title, description và ảnh chia sẻ mạng xã hội.
-- `Quản lý tài khoản`: hướng dẫn quản lý tài khoản admin qua Netlify Identity.
+- `Nội dung`: sửa text chính của trang chủ.
+- `Marketing`: sửa banner, voucher và popup khuyến mãi.
+- `Cài đặt`: sửa thông tin thương hiệu, link đặt hàng, social và SEO.
+- `Tài khoản`: mở nhanh Netlify Identity để quản lý admin.
 
 ## Cách sửa sản phẩm
 
