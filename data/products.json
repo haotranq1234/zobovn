@@ -1,3 +1,62 @@
 {
-  "products": []
+  "products": [
+    {
+      "id": "san-pham-1784052122812",
+      "name": "Đầu Lọc Thuốc Hộp ComBo 5 Chiếc",
+      "price": "Liên hệ",
+      "description": "Sử Dụng Đa Năng FULLSIZE Cả 5 Đều Dùng Được Đầu Lớn & Vừa & Nhỏ , Tái Sử Dụng Nhiều Lần, Đầu lọc hút thuốc, đầu lọc hút thuốc lá, đầu lọc khói thuốc",
+      "image": "assets/uploads/1784052267261-cover-f1.webp",
+      "gallery": [
+        {
+          "type": "video",
+          "title": "",
+          "url": "assets/uploads/1784052269466-gallery-1-fv1.png",
+          "poster": ""
+        },
+        {
+          "type": "image",
+          "title": "",
+          "url": "Sẽ upload: f2.webp",
+          "poster": ""
+        },
+        {
+          "type": "image",
+          "title": "",
+          "url": "assets/uploads/1784052272156-gallery-3-f2.webp",
+          "poster": ""
+        },
+        {
+          "type": "image",
+          "title": "",
+          "url": "assets/uploads/1784052273541-gallery-4-f4.webp",
+          "poster": ""
+        },
+        {
+          "type": "image",
+          "title": "",
+          "url": "assets/uploads/1784052274856-gallery-5-f5.webp",
+          "poster": ""
+        },
+        {
+          "type": "image",
+          "title": "",
+          "url": "assets/uploads/1784052276092-gallery-6-f6.webp",
+          "poster": ""
+        },
+        {
+          "type": "image",
+          "title": "",
+          "url": "assets/uploads/1784052278482-gallery-7-f7.webp",
+          "poster": ""
+        }
+      ],
+      "category": "",
+      "badge": "",
+      "isBestSeller": true,
+      "buyLink": "https://www.facebook.com/Zoboshop.vn",
+      "isActive": true,
+      "createdAt": "2026-07-14T18:02:02.812Z",
+      "updatedAt": "2026-07-14T18:04:27.261Z"
+    }
+  ]
 }
