@@ -1,0 +1,18 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ZOBO VN logo">
+  <defs>
+    <linearGradient id="g1" x1="36" y1="32" x2="156" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0D39B"/>
+      <stop offset="0.52" stop-color="#D6A85E"/>
+      <stop offset="1" stop-color="#8B6328"/>
+    </linearGradient>
+    <radialGradient id="g2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(92 64) rotate(90) scale(84)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="16" y="16" width="160" height="160" rx="44" fill="#101215"/>
+  <rect x="16" y="16" width="160" height="160" rx="44" fill="url(#g2)"/>
+  <circle cx="96" cy="96" r="60" stroke="url(#g1)" stroke-width="8"/>
+  <path d="M63 62H129L88 96L129 130H63L103 96L63 62Z" fill="url(#g1)"/>
+  <circle cx="96" cy="96" r="74" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="2"/>
+</svg>

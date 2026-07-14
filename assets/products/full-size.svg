@@ -1,0 +1,32 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Đầu lọc thuốc lá Full Size">
+  <defs>
+    <linearGradient id="bg" x1="88" y1="94" x2="1114" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16181D"/>
+      <stop offset="1" stop-color="#0B0C0F"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="314" y1="196" x2="890" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F2D28F"/>
+      <stop offset="0.52" stop-color="#D6A85E"/>
+      <stop offset="1" stop-color="#8B6328"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(610 438) rotate(90) scale(302 430)">
+      <stop stop-color="#D6A85E" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#D6A85E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="900" rx="56" fill="url(#bg)"/>
+  <circle cx="610" cy="438" r="360" fill="url(#glow)"/>
+  <circle cx="610" cy="438" r="280" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="2"/>
+  <circle cx="610" cy="438" r="220" stroke="url(#gold)" stroke-width="10" opacity="0.55"/>
+  <rect x="430" y="332" width="360" height="214" rx="92" fill="#111317" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="2"/>
+  <rect x="466" y="366" width="128" height="146" rx="48" fill="#F1D8A1"/>
+  <rect x="586" y="366" width="160" height="146" rx="48" fill="#D6A85E"/>
+  <rect x="462" y="388" width="142" height="22" rx="11" fill="#111317" fill-opacity="0.55"/>
+  <path d="M618 401h92" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round"/>
+  <path d="M514 462h160" stroke="#FFFFFF" stroke-opacity="0.24" stroke-width="10" stroke-linecap="round"/>
+  <path d="M520 402h76" stroke="#8B6328" stroke-opacity="0.55" stroke-width="12" stroke-linecap="round"/>
+  <rect x="646" y="376" width="68" height="126" rx="28" fill="#0E0F12" opacity="0.45"/>
+  <rect x="520" y="520" width="160" height="26" rx="13" fill="#D6A85E" fill-opacity="0.22"/>
+  <text x="88" y="118" fill="#F4F2EC" fill-opacity="0.7" font-family="Space Grotesk, sans-serif" font-size="34" letter-spacing="6">ZOBO VN</text>
+  <text x="88" y="180" fill="#F4F2EC" font-family="Space Grotesk, sans-serif" font-size="58" font-weight="700" letter-spacing="-2">FULL SIZE</text>
+</svg>

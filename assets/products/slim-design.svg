@@ -1,0 +1,22 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tẩu lọc thiết kế dạng slim">
+  <defs>
+    <linearGradient id="bg" x1="76" y1="104" x2="1108" y2="832" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16181D"/>
+      <stop offset="1" stop-color="#0A0B0E"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="286" y1="174" x2="912" y2="736" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F2D28F"/>
+      <stop offset="0.46" stop-color="#D6A85E"/>
+      <stop offset="1" stop-color="#8B6328"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" rx="56" fill="url(#bg)"/>
+  <rect x="520" y="160" width="160" height="580" rx="78" fill="url(#gold)"/>
+  <rect x="556" y="206" width="88" height="220" rx="40" fill="#F4E0B7"/>
+  <rect x="556" y="444" width="88" height="224" rx="40" fill="#111317"/>
+  <rect x="580" y="238" width="40" height="400" rx="20" fill="#FFFFFF" fill-opacity="0.08"/>
+  <path d="M520 420h160" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="10" stroke-linecap="round"/>
+  <path d="M520 488h160" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="10" stroke-linecap="round"/>
+  <text x="88" y="118" fill="#F4F2EC" fill-opacity="0.7" font-family="Space Grotesk, sans-serif" font-size="34" letter-spacing="6">ZOBO VN</text>
+  <text x="88" y="180" fill="#F4F2EC" font-family="Space Grotesk, sans-serif" font-size="56" font-weight="700" letter-spacing="-2">SLIM DESIGN</text>
+</svg>
