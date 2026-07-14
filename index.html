@@ -100,24 +100,26 @@
               <p>Thương hiệu phụ kiện lọc phong cách hiện đại, tập trung vào trải nghiệm gọn nhẹ và dễ tiếp cận trên mobile.</p>
             </div>
 
-            <div class="hero-card hero-card--feature hero-card--primary">
-              <span class="hero-card__eyebrow">Bán chạy</span>
+            <div class="hero-card hero-card--feature hero-card--primary" data-hero-primary>
+              <span class="hero-card__eyebrow" data-hero-primary-badge>Đang tải</span>
               <img
-                src="assets/products/full-size-pack.png"
+                src="assets/logo.png"
                 alt=""
                 class="hero-card__image"
+                data-hero-primary-image
               />
-              <h2>Hộp 5 đầu lọc Full Size</h2>
+              <h2 data-hero-primary-title>Sản phẩm nổi bật</h2>
             </div>
 
-            <div class="hero-card hero-card--feature hero-card--secondary">
-              <span class="hero-card__eyebrow">Signature</span>
+            <div class="hero-card hero-card--feature hero-card--secondary" data-hero-secondary>
+              <span class="hero-card__eyebrow" data-hero-secondary-badge>Đang tải</span>
               <img
-                src="assets/products/combo-5-in-1.png"
+                src="assets/logo.png"
                 alt=""
                 class="hero-card__image"
+                data-hero-secondary-image
               />
-              <h2>Siêu Combo 5 in 1</h2>
+              <h2 data-hero-secondary-title>Danh mục mới</h2>
             </div>
           </div>
         </section>
@@ -132,7 +134,7 @@
             </p>
           </div>
 
-          <div class="product-grid" data-product-grid></div>
+          <div class="product-grid" data-product-grid aria-live="polite"></div>
         </section>
 
         <section class="section reveal" id="why-zobo" aria-labelledby="why-title">

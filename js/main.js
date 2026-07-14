@@ -1,8 +1,14 @@
-import { benefits, contactChannels, products, siteConfig } from "./data.js";
+import { benefits, contactChannels, siteConfig } from "./data.js";
+import { getFirebaseServices } from "./firebase.js";
 
 const productGrid = document.querySelector("[data-product-grid]");
 const benefitGrid = document.querySelector("[data-benefit-grid]");
 const contactGrid = document.querySelector("[data-contact-grid]");
+const heroPrimary = document.querySelector("[data-hero-primary]");
+const heroSecondary = document.querySelector("[data-hero-secondary]");
+
+let revealObserver;
+let firebaseUnsubscribe = null;
 
 const iconMap = {
   compact: `
@@ -60,7 +66,7 @@ const iconMap = {
 };
 
 function escapeHtml(value) {
-  return String(value)
+  return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -68,43 +74,60 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function renderProducts() {
-  productGrid.innerHTML = products
-    .map((product) => {
-      const features = product.features
-        .map((feature) => `<li>${escapeHtml(feature)}</li>`)
-        .join("");
+function normalizeText(value, fallback = "") {
+  const text = String(value ?? "").trim();
+  return text.length ? text : fallback;
+}
 
-      return `
-        <article class="product-card reveal" id="product-${escapeHtml(product.id)}">
-          <div class="product-card__media">
-            <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.imageAlt)}" loading="lazy" decoding="async" />
-          </div>
-          <div class="product-card__body">
-            <div class="product-card__header">
-              <span class="badge">${escapeHtml(product.badge)}</span>
-              <h3>${escapeHtml(product.name)}</h3>
-              <p>${escapeHtml(product.description)}</p>
-            </div>
+function sanitizeUrl(value, fallback) {
+  try {
+    const candidate = new URL(normalizeText(value, fallback), window.location.origin);
+    return ["http:", "https:"].includes(candidate.protocol) ? candidate.href : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
-            <details class="product-details">
-              <summary class="product-summary">Xem sản phẩm</summary>
-              <div class="product-details__content">
-                <p>Điểm nổi bật dành cho trang giới thiệu chính thức:</p>
-                <ul>
-                  ${features}
-                </ul>
-              </div>
-            </details>
+function formatPrice(value) {
+  const raw = normalizeText(value);
+  if (!raw) {
+    return "Liên hệ";
+  }
 
-            <div class="product-card__actions">
-              <a class="button button--secondary" href="${escapeHtml(siteConfig.links.order)}" target="_blank" rel="noopener noreferrer">Đặt hàng</a>
-            </div>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+  if (/đ|vnd|vnđ|liên hệ/i.test(raw)) {
+    return raw;
+  }
+
+  const numeric = Number(raw);
+  if (Number.isFinite(numeric)) {
+    return `${new Intl.NumberFormat("vi-VN").format(numeric)}đ`;
+  }
+
+  return raw;
+}
+
+function timestampToMillis(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === "function") return value.toMillis();
+  if (typeof value.seconds === "number") {
+    return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1e6);
+  }
+  const parsed = new Date(value).getTime();
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function sortProducts(items) {
+  return [...items].sort((first, second) => {
+    const right =
+      timestampToMillis(second.updatedAt) ||
+      timestampToMillis(second.createdAt) ||
+      timestampToMillis(second.__createdAt);
+    const left =
+      timestampToMillis(first.updatedAt) ||
+      timestampToMillis(first.createdAt) ||
+      timestampToMillis(first.__createdAt);
+    return right - left;
+  });
 }
 
 function renderBenefits() {
@@ -143,43 +166,224 @@ function renderContacts() {
     .join("");
 }
 
-function setupRevealObserver() {
-  const revealElements = document.querySelectorAll(".reveal");
+function renderLoadingState() {
+  productGrid.innerHTML = Array.from({ length: 4 })
+    .map(
+      () => `
+        <article class="skeleton-card">
+          <div class="skeleton-card__media"></div>
+          <div class="skeleton-bar skeleton-bar--wide"></div>
+          <div class="skeleton-bar skeleton-bar--mid"></div>
+          <div class="skeleton-bar skeleton-bar--short"></div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function renderEmptyState() {
+  productGrid.innerHTML = `
+    <article class="empty-state reveal">
+      <span class="badge">Chờ cập nhật</span>
+      <h3>Chưa có sản phẩm đang hiển thị</h3>
+      <p>Hãy đăng nhập /admin để thêm sản phẩm đầu tiên. Khi bật trạng thái hoạt động, website sẽ tự cập nhật ngay.</p>
+      <div class="empty-state__actions">
+        <a class="button button--primary" href="/admin">Mở trang quản trị</a>
+        <a class="button button--secondary" href="${escapeHtml(siteConfig.links.messenger)}" target="_blank" rel="noopener noreferrer">Liên hệ Messenger</a>
+      </div>
+    </article>
+  `;
+  observeRevealElements(productGrid);
+}
+
+function renderHeroProducts(items) {
+  const primary = items[0];
+  const secondary = items[1] || items[0];
+  const fallback = {
+    badge: "Đang cập nhật",
+    name: "Sản phẩm nổi bật",
+    image: "assets/logo.png",
+  };
+
+  const heroItems = [
+    { card: heroPrimary, product: primary || fallback, defaultTitle: "Sản phẩm nổi bật" },
+    { card: heroSecondary, product: secondary || fallback, defaultTitle: "Bộ sưu tập mới" },
+  ];
+
+  heroItems.forEach(({ card, product, defaultTitle }) => {
+    if (!card) return;
+
+    const badge = card.querySelector("[data-hero-primary-badge], [data-hero-secondary-badge]");
+    const image = card.querySelector("[data-hero-primary-image], [data-hero-secondary-image]");
+    const title = card.querySelector("[data-hero-primary-title], [data-hero-secondary-title]");
+
+    if (badge) {
+      badge.textContent = normalizeText(product.badge, fallback.badge);
+    }
+
+    if (image) {
+      image.src = normalizeText(product.image, fallback.image);
+      image.alt = normalizeText(product.name, defaultTitle);
+    }
+
+    if (title) {
+      title.textContent = normalizeText(product.name, defaultTitle);
+    }
+  });
+}
+
+function renderProductCards(items) {
+  if (!items.length) {
+    renderEmptyState();
+    return;
+  }
+
+  productGrid.innerHTML = items
+    .map((product) => {
+      const productId = escapeHtml(product.id || product.firestoreId || "");
+      const category = normalizeText(product.category, "Sản phẩm");
+      const badge = normalizeText(product.badge, "Mới");
+      const price = formatPrice(product.price);
+      const buyLink = sanitizeUrl(product.buyLink, siteConfig.links.order);
+      const description = normalizeText(product.description, "Sản phẩm đang được cập nhật.");
+      const image = normalizeText(product.image, "assets/logo.png");
+      const name = normalizeText(product.name, "Tên sản phẩm");
+
+      return `
+        <article class="product-card reveal" id="product-${productId}">
+          <div class="product-card__media">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy" decoding="async" />
+          </div>
+          <div class="product-card__body">
+            <div class="product-card__header">
+              <span class="badge">${escapeHtml(badge)}</span>
+              <h3>${escapeHtml(name)}</h3>
+              <div class="product-card__meta">
+                <span class="product-card__category">${escapeHtml(category)}</span>
+                <span class="product-card__price">${escapeHtml(price)}</span>
+              </div>
+              <p>${escapeHtml(description)}</p>
+            </div>
+
+            <div class="product-card__actions">
+              <a class="button button--secondary" href="${escapeHtml(buyLink)}" target="_blank" rel="noopener noreferrer">Xem sản phẩm</a>
+              <a class="button button--primary" href="${escapeHtml(buyLink)}" target="_blank" rel="noopener noreferrer">Đặt hàng</a>
+            </div>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+
+  observeRevealElements(productGrid);
+}
+
+function observeRevealElements(scope = document) {
+  const revealElements = scope.querySelectorAll(".reveal");
 
   if (!("IntersectionObserver" in window)) {
     revealElements.forEach((element) => element.classList.add("is-visible"));
     return;
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.16,
-      rootMargin: "0px 0px -8% 0px",
-    },
-  );
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.16,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+  }
 
-  revealElements.forEach((element) => observer.observe(element));
+  revealElements.forEach((element) => {
+    if (!element.classList.contains("is-visible")) {
+      revealObserver.observe(element);
+    }
+  });
 }
 
-renderProducts();
-renderBenefits();
-renderContacts();
-setupRevealObserver();
+async function subscribeToProducts() {
+  const { app, getFirestore, collection, query, where, onSnapshot } = await getFirebaseServices();
+  const db = getFirestore(app);
+  const productsQuery = query(collection(db, "products"), where("isActive", "==", true));
 
-document.documentElement.setAttribute("lang", "vi");
+  firebaseUnsubscribe = onSnapshot(
+    productsQuery,
+    (snapshot) => {
+      const products = snapshot.docs.map((docSnapshot) => ({
+        firestoreId: docSnapshot.id,
+        ...docSnapshot.data(),
+      }));
+
+      const sortedProducts = sortProducts(products);
+
+      renderHeroProducts(sortedProducts);
+      renderProductCards(sortedProducts);
+    },
+    (error) => {
+      console.error("Firestore products listener error:", error);
+      productGrid.innerHTML = `
+        <article class="empty-state reveal">
+          <span class="badge">Lỗi tải dữ liệu</span>
+          <h3>Không thể tải sản phẩm lúc này</h3>
+          <p>Vui lòng thử lại sau hoặc kiểm tra cấu hình Firebase.</p>
+          <div class="empty-state__actions">
+            <a class="button button--secondary" href="${escapeHtml(siteConfig.links.messenger)}" target="_blank" rel="noopener noreferrer">Liên hệ Messenger</a>
+          </div>
+        </article>
+      `;
+      observeRevealElements(productGrid);
+    },
+  );
+}
+
+function setupOrderCtas() {
+  const orderCtas = document.querySelectorAll("[data-order-link]");
+  orderCtas.forEach((cta) => {
+    cta.setAttribute("href", siteConfig.links.order);
+    cta.setAttribute("target", "_blank");
+    cta.setAttribute("rel", "noopener noreferrer");
+  });
+}
+
+async function bootstrap() {
+  renderBenefits();
+  renderContacts();
+  setupOrderCtas();
+  renderLoadingState();
+  observeRevealElements();
+
+  try {
+    await subscribeToProducts();
+  } catch (error) {
+    console.error("Firebase bootstrap error:", error);
+    productGrid.innerHTML = `
+      <article class="empty-state reveal">
+        <span class="badge">Cần cấu hình</span>
+        <h3>Website chưa kết nối Firebase</h3>
+        <p>Hãy thêm biến môi trường Firebase và kiểm tra API config trước khi deploy.</p>
+        <div class="empty-state__actions">
+          <a class="button button--secondary" href="/admin">Mở trang quản trị</a>
+        </div>
+      </article>
+    `;
+    observeRevealElements(productGrid);
+  }
+}
+
 document.documentElement.setAttribute("data-brand", siteConfig.brandName);
+bootstrap();
 
-const orderCtas = document.querySelectorAll("[data-order-link]");
-orderCtas.forEach((cta) => {
-  cta.setAttribute("href", siteConfig.links.order);
-  cta.setAttribute("target", "_blank");
-  cta.setAttribute("rel", "noopener noreferrer");
+window.addEventListener("beforeunload", () => {
+  if (typeof firebaseUnsubscribe === "function") {
+    firebaseUnsubscribe();
+  }
 });

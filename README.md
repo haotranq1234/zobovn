@@ -1,196 +1,246 @@
 # ZOBO VN
 
-Website landing page/bio commerce chính thức cho thương hiệu ZOBO VN. Dự án được dựng bằng HTML, CSS và JavaScript thuần để dễ bảo trì, tải nhanh và triển khai lên GitHub Pages.
+Website ZOBO VN hiện tại đã được nâng cấp thành landing page + admin dashboard dùng Firebase.
 
-## Tính năng chính
+- Trang chủ đọc sản phẩm trực tiếp từ Firestore.
+- Trang quản trị nằm ở `/admin`.
+- Admin đăng nhập bằng Firebase Authentication email/password.
+- Ảnh sản phẩm upload lên Firebase Storage.
+- Site sẵn sàng deploy lên Vercel.
 
-- Giao diện mobile-first, tối ưu cho khách từ Facebook và TikTok.
-- Hero section rõ CTA.
-- Sản phẩm được render từ dữ liệu riêng, dễ thêm/xóa.
-- Section lý do chọn ZOBO với icon hiện đại.
-- Khu vực liên hệ với nút lớn, dễ bấm.
-- Floating CTA trên mobile.
-- SEO cơ bản: title, description, canonical, Open Graph, favicon, sitemap, robots.
-- Tương thích GitHub Pages và sẵn `CNAME` cho `zobovn.store`.
+## Tính năng
+
+- Giữ nguyên phong cách thiết kế hiện tại: premium, tối, hiện đại, mobile-first.
+- Trang chủ vẫn có hero, sản phẩm nổi bật, lý do chọn ZOBO, liên hệ, CTA nổi.
+- Sản phẩm không còn hardcode trong code giao diện.
+- Admin dashboard có:
+  - Danh sách sản phẩm
+  - Thêm sản phẩm
+  - Sửa sản phẩm
+  - Xóa sản phẩm
+  - Upload ảnh
+  - Bật/tắt sản phẩm
+  - Preview ảnh
+  - Tìm kiếm sản phẩm
+  - Nạp dữ liệu mẫu ban đầu
 
 ## Cấu trúc thư mục
 
 ```text
 .
 ├─ index.html
-├─ styles.css
+├─ admin/
+│  ├─ index.html
+│  ├─ admin.css
+│  └─ admin.js
+├─ api/
+│  └─ firebase-config.js
 ├─ js/
 │  ├─ data.js
+│  ├─ firebase.js
 │  └─ main.js
 ├─ assets/
 │  ├─ logo.png
 │  ├─ favicon.svg
-│  ├─ og-image.svg
 │  └─ products/
 │     ├─ full-size-pack.png
 │     ├─ combo-5-in-1.png
 │     ├─ physical-filter-series.png
 │     ├─ multi-size-physical.png
 │     └─ full-size-5pcs.png
-├─ CNAME
-├─ robots.txt
-└─ sitemap.xml
+├─ firestore.rules
+├─ storage.rules
+├─ vercel.json
+├─ .env.example
+└─ styles.css
 ```
 
-## Chạy website local
+## Chạy local
 
-Bạn không cần cài dependency nào.
+Vì project có API route `/api/firebase-config`, cách chạy đúng là dùng Vercel CLI.
 
-### Cách 1: mở trực tiếp
-
-- Mở `index.html` bằng trình duyệt.
-
-### Cách 2: chạy bằng server tĩnh
+### 1. Cài Vercel CLI
 
 ```bash
-python -m http.server 8000
+npm i -g vercel
 ```
 
-Sau đó mở `http://localhost:8000`.
+### 2. Tạo file `.env`
 
-Nếu muốn dùng Node:
+Copy `.env.example` thành `.env.local` và điền giá trị Firebase thật.
+
+### 3. Chạy local
 
 ```bash
-npx serve .
+vercel dev
 ```
 
-## Cách thay logo
+Sau đó mở:
 
-- Logo chính nằm ở `assets/logo.png`.
-- Favicon đang dùng cùng file `assets/logo.png`.
-- Nếu muốn thay bằng ảnh khác, cập nhật luôn đường dẫn trong `index.html`.
+- Trang chủ: `http://localhost:3000`
+- Admin: `http://localhost:3000/admin`
 
-## Cách thay ảnh sản phẩm
+## Cấu hình Firebase
 
-- Ảnh sản phẩm nằm trong `assets/products/`.
-- Mỗi sản phẩm đang dùng một file PNG riêng để dễ thay thế.
-- Chỉ cần thay file tương ứng hoặc đổi đường dẫn trong `js/data.js`.
+### 1. Tạo Firebase Project
 
-## Cách thêm sản phẩm
+- Vào Firebase Console và tạo project mới.
+- Bật Web App để lấy cấu hình Firebase.
 
-Mở `js/data.js` và thêm một object mới vào mảng `products`.
+### 2. Bật Authentication
 
-Mỗi sản phẩm nên có các trường:
+- Vào **Authentication**.
+- Bật **Email/Password**.
+- Tạo tài khoản admin với email khớp biến `ADMIN_EMAIL`.
+
+Mặc định repo đang dùng:
+
+- `admin@zobovn.store`
+
+Nếu đổi email admin, bạn phải cập nhật đồng bộ:
+
+- `ADMIN_EMAIL` trong `.env`
+- `firestore.rules`
+- `storage.rules`
+
+### 3. Bật Firestore
+
+- Tạo Firestore Database.
+- Chọn mode phù hợp với project của bạn.
+- Collection cần dùng: `products`
+
+Mỗi document sản phẩm nên có các field:
 
 - `id`
 - `name`
+- `price`
 - `description`
-- `badge`
 - `image`
-- `imageAlt`
-- `features`
+- `category`
+- `badge`
+- `buyLink`
+- `createdAt`
+- `updatedAt`
+- `isActive`
 
-Ví dụ:
+Lưu ý:
 
-```js
-{
-  id: "new-product",
-  name: "Tên sản phẩm mới",
-  description: "Mô tả ngắn",
-  badge: "Mới",
-  image: "assets/products/new-product.png",
-  imageAlt: "Mô tả ảnh",
-  features: [
-    "Điểm nổi bật 1",
-    "Điểm nổi bật 2",
-    "Điểm nổi bật 3",
-  ],
-}
+- `image` là URL ảnh từ Firebase Storage.
+- `isActive = true` thì sản phẩm mới hiển thị trên homepage.
+- Code cũng lưu thêm `imagePath` để xóa ảnh cũ trong Storage khi cần.
+
+### 4. Bật Storage
+
+- Vào **Storage** và bật bucket.
+- Ảnh từ admin sẽ được upload lên đây.
+
+### 5. Import rules
+
+Mở file sau trong repo:
+
+- [firestore.rules](./firestore.rules)
+- [storage.rules](./storage.rules)
+
+Rồi dán vào phần Rules tương ứng trong Firebase Console.
+
+## Biến môi trường
+
+Tạo `.env.local` từ `.env.example` với các biến:
+
+```env
+FIREBASE_API_KEY=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_PROJECT_ID=
+FIREBASE_STORAGE_BUCKET=
+FIREBASE_MESSAGING_SENDER_ID=
+FIREBASE_APP_ID=
+FIREBASE_MEASUREMENT_ID=
+ADMIN_EMAIL=
 ```
 
-## Cách sửa link Facebook
+## Cấu hình Vercel
 
-Mở `js/data.js` và chỉnh:
+### 1. Kết nối repo
 
-```js
-siteConfig.links.facebook
-```
+- Push code lên GitHub.
+- Import repo vào Vercel.
 
-## Cách sửa link Messenger
+### 2. Add Environment Variables
 
-Mở `js/data.js` và chỉnh:
+Thêm các biến ở mục Environment Variables trong Vercel Project Settings.
 
-```js
-siteConfig.links.messenger
-```
+### 3. Deploy
 
-## Cách sửa link TikTok
+- Vercel sẽ tự phát hiện static site + API route `/api/firebase-config`.
+- Route `/admin` đã được cấu hình trong `vercel.json`.
 
-Mở `js/data.js` và chỉnh:
+## Cách dùng admin dashboard
 
-```js
-siteConfig.links.tiktok
-```
+### Đăng nhập
 
-## Cách sửa link đặt hàng
+- Mở `/admin`
+- Đăng nhập bằng email/password Firebase Authentication
 
-Mở `js/data.js` và chỉnh:
+### Nạp dữ liệu mẫu ban đầu
 
-```js
-siteConfig.links.order
-```
+Khi Firestore chưa có sản phẩm, bấm **Nạp dữ liệu mẫu** trong admin.
 
-Nút `Đặt hàng ngay` ở hero, floating CTA và nút trong card sản phẩm đều đang dùng link này.
+Nút này sẽ:
 
-## Cách deploy lên GitHub Pages
+- Lấy ảnh mẫu từ repo
+- Upload ảnh lên Firebase Storage
+- Tạo document trong Firestore
 
-1. Push code lên repository GitHub.
-2. Vào `Settings` của repository.
-3. Chọn `Pages`.
-4. Ở `Build and deployment`, chọn nguồn publish là branch bạn dùng, thường là `main` hoặc `master`, và thư mục `/(root)`.
-5. Đợi GitHub build xong và cấp URL Pages.
-6. Nếu dùng custom domain, giữ file `CNAME` ở root repository.
+Sau khi bạn thay bằng ảnh thật riêng của bạn, chỉ cần sửa sản phẩm ngay trong admin.
 
-Theo tài liệu GitHub Pages, custom domain cho apex domain cần cấu hình bản ghi `A`, `ALIAS` hoặc `ANAME`; subdomain dùng `CNAME`. GitHub cũng khuyến nghị dùng thêm `www` nếu có thể.
+### Thêm sản phẩm
 
-## Cách kết nối domain `zobovn.store`
+- Điền form bên phải
+- Upload ảnh
+- Bấm lưu
 
-### 1. Cấu hình trong GitHub
+### Sửa sản phẩm
 
-- Vào `Settings > Pages`.
-- Nhập custom domain là `zobovn.store`.
-- Lưu lại và chờ GitHub xác nhận.
+- Bấm nút **Sửa** ở danh sách
+- Chỉnh thông tin
+- Bấm cập nhật
 
-### 2. Giữ file `CNAME`
+### Xóa sản phẩm
 
-File `CNAME` ở root repo phải chứa đúng một dòng:
+- Bấm **Xóa**
+- Xác nhận thao tác
 
-```text
-zobovn.store
-```
+### Bật / tắt sản phẩm
 
-### 3. Cấu hình DNS
+- Dùng công tắc **Hiển thị**
+- Khi tắt, sản phẩm sẽ không còn xuất hiện ở homepage
 
-Nếu dùng apex domain `zobovn.store`, hãy trỏ DNS về GitHub Pages.
+## Lưu ý về hình ảnh
 
-Theo tài liệu GitHub Pages, các bản ghi `A` cho apex domain là:
+- Homepage không đọc ảnh trực tiếp từ repository.
+- Ảnh hiển thị trên site lấy từ Firebase Storage.
+- Các file ảnh mẫu trong repo chỉ phục vụ bước nạp dữ liệu ban đầu.
 
-- `185.199.108.153`
-- `185.199.109.153`
-- `185.199.110.153`
-- `185.199.111.153`
+## Deploy trên Vercel
 
-Nếu bạn dùng thêm `www.zobovn.store`, hãy tạo bản ghi `CNAME` trỏ `www` về domain GitHub Pages của bạn.
+1. Push code lên GitHub branch `main`.
+2. Import repo vào Vercel.
+3. Thêm biến môi trường.
+4. Deploy.
+5. Truy cập:
+   - Trang chủ: `/`
+   - Admin: `/admin`
 
-### 4. Bật HTTPS
+## Gợi ý kiểm tra sau deploy
 
-- Sau khi DNS đúng, quay lại `Settings > Pages`.
-- Bật `Enforce HTTPS` khi tùy chọn này xuất hiện.
-- GitHub có thể mất một thời gian ngắn để cấp chứng chỉ.
+- Trang chủ load được sản phẩm từ Firestore.
+- `/admin` mở được form login.
+- Đăng nhập xong có thể thêm/sửa/xóa sản phẩm.
+- Upload ảnh lên Storage thành công.
+- Bật/tắt sản phẩm xong homepage cập nhật.
 
-## Lưu ý nội dung
+## Ghi chú kỹ thuật
 
-- Không dùng các câu khẳng định y tế hoặc cam kết sức khỏe tuyệt đối.
-- Nội dung hiện tại mô tả trung tính và tập trung vào trải nghiệm sản phẩm.
-
-## Mở rộng trong tương lai
-
-- Thêm trang chi tiết riêng cho từng sản phẩm.
-- Kết nối form đặt hàng thực tế.
-- Thêm tracking chuyển đổi nếu cần.
-- Bổ sung ảnh thật thay cho placeholder SVG.
+- Không dùng framework nặng để giữ tốc độ tải tốt.
+- Firebase config không hardcode trong source; được đọc từ API route `/api/firebase-config`.
+- Homepage dùng realtime listener để cập nhật sản phẩm ngay khi admin thay đổi dữ liệu.
